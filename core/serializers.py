@@ -86,7 +86,6 @@ class AccountSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError('Be specify fb_token or ig_token')
 
     def to_representation(self, account):
-        print("hogehoge", type(account))
         output = super().to_representation(account)
         try:
             token = Token.objects.get(user=account.user)
