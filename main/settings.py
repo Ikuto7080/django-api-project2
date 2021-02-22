@@ -24,9 +24,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'dwlg$#m!6w_#d_9i7g98t=@(qp*4b--c*ftl44k)i^ov5gz=!)'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False 
+DEBUG = True
 
-ALLOWED_HOSTS = ['ikuto1913.herokuapp.com', '127.0.0.1']
+ALLOWED_HOSTS = ['*']
 
 
 
@@ -48,6 +48,10 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+
+    # 'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',     
+
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -125,6 +129,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+ 
 STATIC_URL = '/static/'
 
 REST_FRAMEWORK = {
@@ -141,6 +147,8 @@ REST_FRAMEWORK = {
 APPEND_SLASH = False
 
 CORS_ALLOW_ALL_ORIGINS = True
+
+
 
 import django_heroku
 django_heroku.settings(locals())
