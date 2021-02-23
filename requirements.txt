@@ -16,3 +16,5 @@ requests==2.25.1
 sqlparse==0.4.1
 wcwidth==0.2.5
 whitenoise==5.2.0
+redis==3.5.3
+Celery==5.0.5

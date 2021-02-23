@@ -4,7 +4,7 @@ parameter = "AQD9MlbccaNXbmLsLxtQen_H7q7sCCIOXtbIvo6yOsZbDGp2R2PeMN0GU3YBy_-KRJB
 url = "https://graph.facebook.com/v9.0/oauth/access_token"
 params = {
     'client_id': '420945845838455',
-    'redirect_uri': 'https://localhost:8080/',
+    'redirect_uri': 'https://ikuto1913.herokuapp.com/',
     'client_secret': '86f24082416e7e017e2c4f8f4e39458f',
     'code': parameter
 }

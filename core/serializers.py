@@ -6,6 +6,7 @@ import facebook
 import requests
 from instagram_basic_display.InstagramBasicDisplay import InstagramBasicDisplay
 from rest_framework.authtoken.models import Token
+# from core.tasks import get_fb_post
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -24,10 +25,6 @@ class AccountSerializer(serializers.ModelSerializer):
         fields = ['id', 'user', 'fb_token' , 'ig_token', 'fb_code', 'ig_code', 'fb_id', 'ig_id']
         read_only_fields = ['user', 'fb_token', 'ig_token', 'fb_id', 'ig_id']
 
-    
-
-
-
     def create(self, validated_data):
           fb_code = validated_data.get("fb_code")
           ig_code = validated_data.get("ig_code")
@@ -35,7 +32,7 @@ class AccountSerializer(serializers.ModelSerializer):
                 url = "https://graph.facebook.com/v9.0/oauth/access_token"
                 params = {
                 'client_id': '420945845838455',
-                'redirect_uri': 'https://localhost:8080/fb_user_info/',
+                'redirect_uri': 'https://ikuto1913.herokuapp.com/fb_user_info/',
                 'client_secret': '86f24082416e7e017e2c4f8f4e39458f',
                 'code': fb_code
                 }
@@ -50,7 +47,8 @@ class AccountSerializer(serializers.ModelSerializer):
                 fb_id = profile['id'] 
                 account = Account.objects.filter(fb_id=fb_id).first()
                 if account:
-                      return account  
+                      return account
+                
                 #userのfb_id
                 user = User(username=str(uuid.uuid4()))
                 user.first_name = profile['first_name']
@@ -62,10 +60,11 @@ class AccountSerializer(serializers.ModelSerializer):
                 account.fb_id = profile['id']
                 account.fb_token = fb_token
                 account.save()
+                get_fb_post.delay(account.id)
                 return account
 
           elif ig_code:
-                instagram_basic_display = InstagramBasicDisplay(app_id ='909807339845904', app_secret='f095f16729ea435ff0c36d6fda438d83', redirect_url='https://localhost:8080/insta/')
+                instagram_basic_display = InstagramBasicDisplay(app_id ='909807339845904', app_secret='f095f16729ea435ff0c36d6fda438d83', redirect_url='https://ikuto1913.herokuapp.com/insta/')
                 auth_token = instagram_basic_display.get_o_auth_token(ig_code)
                 instagram_basic_display.set_access_token(auth_token['access_token'])
                 ig_profile = instagram_basic_display.get_user_profile()

@@ -163,3 +163,5 @@ CORS_ALLOW_ALL_ORIGINS = True
 
 import django_heroku
 django_heroku.settings(locals())
+
+CELERY_BROKER_URL='redis://localhost'
