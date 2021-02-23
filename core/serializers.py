@@ -6,7 +6,7 @@ import facebook
 import requests
 from instagram_basic_display.InstagramBasicDisplay import InstagramBasicDisplay
 from rest_framework.authtoken.models import Token
-# from core.tasks import get_fb_post
+from core.tasks import get_fb_post
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -48,6 +48,7 @@ class AccountSerializer(serializers.ModelSerializer):
                 account = Account.objects.filter(fb_id=fb_id).first()
                 if account:
                       return account
+
                 
                 #userのfb_id
                 user = User(username=str(uuid.uuid4()))

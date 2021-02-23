@@ -6,14 +6,16 @@ def hello(name):
     print(name)
 
 
-@shared_task
-def print_account_first_name(account_id):
-    account = Account.objects.filter(id=account_id).first()
-    print(account.user.first_name)
+# @shared_task
+# def print_account_first_name(account_id):
+#     account = Account.objects.filter(id=account_id).first()
+#     print(account.user.first_name)
 
 @shared_task
 def get_fb_post(account_id):
-    pass
+    account = Account.objects.filter(id=account_id).first()
+    print(account.user.first_name)
+    
 
 
 
