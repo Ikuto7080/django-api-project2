@@ -1,5 +1,5 @@
 from django.contrib import admin
-from core.models import Account
+from core.models import Account, FbPost, IgPost
 
 
 class AccountAdmin(admin.ModelAdmin):
@@ -7,4 +7,6 @@ class AccountAdmin(admin.ModelAdmin):
     
 
 admin.site.register(Account, AccountAdmin)
+admin.site.register(FbPost)
+admin.site.register(IgPost)
 

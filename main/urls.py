@@ -15,17 +15,21 @@ Including another URLconf
 """
 from django.contrib import admin
 from rest_framework import routers
-from core.viewsets import UserViewSet, AccountViewSet
+from core.viewsets import UserViewSet, AccountViewSet, FbPostViewSet, IgPostViewSet
 from django.urls import path, include
+
 
 
 router = routers.DefaultRouter()
 router.register(r'users', UserViewSet)
 router.register(r'accounts', AccountViewSet)
+router.register(r'fbposts', FbPostViewSet)
+router.register(r'igposts', IgPostViewSet)
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(router.urls)),
-    path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))
+    path('api-auth/', include('rest_framework.urls', namespace = 'rest_framework')),
+    path('', include)
 ]

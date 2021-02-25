@@ -1,12 +1,12 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from core.models import Account
+from core.models import Account, FbPost, IgPost
 import uuid
 import facebook
 import requests
 from instagram_basic_display.InstagramBasicDisplay import InstagramBasicDisplay
 from rest_framework.authtoken.models import Token
-from core.tasks import get_fb_post
+from core.tasks import get_ig_post
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -32,7 +32,7 @@ class AccountSerializer(serializers.ModelSerializer):
                 url = "https://graph.facebook.com/v9.0/oauth/access_token"
                 params = {
                 'client_id': '420945845838455',
-                'redirect_uri': 'https://ikuto1913.herokuapp.com/fb_user_info/',
+                'redirect_uri': 'https://obscure-reef-20222.herokuapp.com/fb_user_info/',
                 'client_secret': '86f24082416e7e017e2c4f8f4e39458f',
                 'code': fb_code
                 }
@@ -48,8 +48,6 @@ class AccountSerializer(serializers.ModelSerializer):
                 account = Account.objects.filter(fb_id=fb_id).first()
                 if account:
                       return account
-
-                
                 #userのfb_id
                 user = User(username=str(uuid.uuid4()))
                 user.first_name = profile['first_name']
@@ -61,11 +59,11 @@ class AccountSerializer(serializers.ModelSerializer):
                 account.fb_id = profile['id']
                 account.fb_token = fb_token
                 account.save()
-                get_fb_post.delay(account.id)
+                # get_fb_post.delay(account.id)
                 return account
 
           elif ig_code:
-                instagram_basic_display = InstagramBasicDisplay(app_id ='909807339845904', app_secret='f095f16729ea435ff0c36d6fda438d83', redirect_url='https://ikuto1913.herokuapp.com/insta/')
+                instagram_basic_display = InstagramBasicDisplay(app_id ='909807339845904', app_secret='f095f16729ea435ff0c36d6fda438d83', redirect_url='https://localhost:8080/insta/')
                 auth_token = instagram_basic_display.get_o_auth_token(ig_code)
                 instagram_basic_display.set_access_token(auth_token['access_token'])
                 ig_profile = instagram_basic_display.get_user_profile()
@@ -79,8 +77,9 @@ class AccountSerializer(serializers.ModelSerializer):
                 account = Account()
                 account.user = user
                 account.ig_id = ig_profile['id']
-                account.ig_token = auth_token
+                account.ig_token = auth_token['access_token']
                 account.save()
+                get_ig_post.delay(account.id)
                 return account
           else:
                 raise serializers.ValidationError('Be specify fb_token or ig_token')
@@ -95,6 +94,20 @@ class AccountSerializer(serializers.ModelSerializer):
         output['token'] = token.key
         print(output)
         return output
+
+class FbPostSerializer(serializers.ModelSerializer):
+    # user = UserSerializer(read_only=True)
+    post_url = serializers.URLField(required=False)
+    class Meta:
+        model = FbPost
+        fields = ['id', 'user', 'post_url']
+        # read_only_fields = ['user']
+
+class IgPostSerializer(serializers.ModelSerializer):
+    media_url = serializers.URLField(required=False)
+    class Meta:
+        model = IgPost
+        fields = ['id', 'user', 'media_url']
 
 
 
