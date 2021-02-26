@@ -14,8 +14,8 @@ class UserViewSet(viewsets.ModelViewSet):
 class AccountViewSet(viewsets.ModelViewSet):
     queryset = Account.objects.all()
     serializer_class = AccountSerializer
-    permission_classes = [permissions.IsAuthenticated]
-    #permissions_classes = [AllowAny]
+    # permission_classes = [permissions.IsAuthenticated]
+    permissions_classes = [AllowAny]
    
     
     def get_queryset(self):

@@ -160,11 +160,10 @@ APPEND_SLASH = False
 CORS_ALLOW_ALL_ORIGINS = True
 
 
-
 import django_heroku
 django_heroku.settings(locals())
 
-CELERY_BROKER_URL = 'redis://localhost'
+CELERY_BROKER_URL = os.environ.get("REDIS_URL") or 'redis://localhost'
 
 
 
