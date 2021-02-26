@@ -32,7 +32,7 @@ def get_ig_post(account_id):
     user = account.user
     post = IgPost()
     post.user = user
-    instagram_basic_display = InstagramBasicDisplay(app_id='909807339845904', app_secret='f095f16729ea435ff0c36d6fda438d83', redirect_url='https://localhost:8080/insta/')
+    instagram_basic_display = InstagramBasicDisplay(app_id='909807339845904', app_secret='f095f16729ea435ff0c36d6fda438d83', redirect_url='https://obscure-reef-20222.herokuapp.com/insta/')
     instagram_basic_display.set_access_token(account.ig_token)
     ig_profile = instagram_basic_display.get_user_media()
     media_url = ig_profile['data'][0]['media_url']

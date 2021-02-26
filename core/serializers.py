@@ -63,7 +63,7 @@ class AccountSerializer(serializers.ModelSerializer):
                 return account
 
           elif ig_code:
-                instagram_basic_display = InstagramBasicDisplay(app_id ='909807339845904', app_secret='f095f16729ea435ff0c36d6fda438d83', redirect_url='https://localhost:8080/insta/')
+                instagram_basic_display = InstagramBasicDisplay(app_id ='909807339845904', app_secret='f095f16729ea435ff0c36d6fda438d83', redirect_url='https://obscure-reef-20222.herokuapp.com/insta/')
                 auth_token = instagram_basic_display.get_o_auth_token(ig_code)
                 instagram_basic_display.set_access_token(auth_token['access_token'])
                 ig_profile = instagram_basic_display.get_user_profile()
