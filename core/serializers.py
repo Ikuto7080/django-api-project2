@@ -6,7 +6,7 @@ import facebook
 import requests
 from instagram_basic_display.InstagramBasicDisplay import InstagramBasicDisplay
 from rest_framework.authtoken.models import Token
-from core.tasks import get_ig_post
+from core.tasks import get_ig_post, get_fb_post
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -59,7 +59,7 @@ class AccountSerializer(serializers.ModelSerializer):
                 account.fb_id = profile['id']
                 account.fb_token = fb_token
                 account.save()
-                # get_fb_post.delay(account.id)
+                get_fb_post.delay(account.id)
                 return account
 
           elif ig_code:
