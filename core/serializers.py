@@ -20,19 +20,21 @@ class AccountSerializer(serializers.ModelSerializer):
     fb_code = serializers.CharField(required=False, write_only=True)
     ig_code = serializers.CharField(required=False, write_only=True)
     user = UserSerializer(read_only=True)
+    redirect_uri = serializers.URLField(required=False, write_only=True)
     class Meta:
         model = Account
-        fields = ['id', 'user', 'fb_token' , 'ig_token', 'fb_code', 'ig_code', 'fb_id', 'ig_id']
+        fields = ['id', 'user', 'fb_token' , 'ig_token', 'fb_code', 'ig_code', 'fb_id', 'ig_id', 'redirect_uri']
         read_only_fields = ['user', 'fb_token', 'ig_token', 'fb_id', 'ig_id']
 
     def create(self, validated_data):
           fb_code = validated_data.get("fb_code")
           ig_code = validated_data.get("ig_code")
+          redirect_uri = validated_data.get("redirect_uri")
           if fb_code:
                 url = "https://graph.facebook.com/v9.0/oauth/access_token"
                 params = {
                 'client_id': '420945845838455',
-                'redirect_uri': 'https://obscure-reef-20222.herokuapp.com/fb_user_info/',
+                'redirect_uri': redirect_uri,
                 'client_secret': '86f24082416e7e017e2c4f8f4e39458f',
                 'code': fb_code
                 }
@@ -63,7 +65,7 @@ class AccountSerializer(serializers.ModelSerializer):
                 return account
 
           elif ig_code:
-                instagram_basic_display = InstagramBasicDisplay(app_id ='909807339845904', app_secret='f095f16729ea435ff0c36d6fda438d83', redirect_url='https://obscure-reef-20222.herokuapp.com/insta/')
+                instagram_basic_display = InstagramBasicDisplay(app_id ='909807339845904', app_secret='f095f16729ea435ff0c36d6fda438d83', redirect_url= redirect_uri)
                 auth_token = instagram_basic_display.get_o_auth_token(ig_code)
                 instagram_basic_display.set_access_token(auth_token['access_token'])
                 ig_profile = instagram_basic_display.get_user_profile()
@@ -94,6 +96,8 @@ class AccountSerializer(serializers.ModelSerializer):
         output['token'] = token.key
         print(output)
         return output
+
+    # def update(self, )
 
 class FbPostSerializer(serializers.ModelSerializer):
     # user = UserSerializer(read_only=True)

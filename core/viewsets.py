@@ -18,15 +18,15 @@ class AccountViewSet(viewsets.ModelViewSet):
     permissions_classes = [AllowAny]
    
     
-    def get_queryset(self):
-        queryset = self.queryset.filter(user=self.request.user)
-        return queryset
+    # def get_queryset(self):
+    #     queryset = self.queryset.filter(user=self.request.user)
+    #     return queryset
 
-    def get_permissions(self):
-        if self.request.method == 'POST':
-            return []
-        else:
-            return [permissions.IsAuthenticated()]
+    # def get_permissions(self):
+    #     if self.request.method == 'POST':
+    #         return []
+    #     else:
+    #         return [permissions.IsAuthenticated()]
 
 class FbPostViewSet(viewsets.ModelViewSet):
     queryset = FbPost.objects.all()
