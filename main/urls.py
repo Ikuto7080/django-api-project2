@@ -13,9 +13,18 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.conf.urls import url
 from django.contrib import admin
+
+from django.conf import settings
+from django.conf.urls.static import static
+
+
+
 from rest_framework import routers
-from core.viewsets import UserViewSet, AccountViewSet, FbPostViewSet, IgPostViewSet
+from core.viewsets import UserViewSet, AccountViewSet, FbPostViewSet, IgPostViewSet, MediaPostViewSet
+
+from core.views import LineWebHookView
 from django.urls import path, include
 
 
@@ -25,11 +34,17 @@ router.register(r'users', UserViewSet)
 router.register(r'accounts', AccountViewSet)
 router.register(r'fbposts', FbPostViewSet)
 router.register(r'igposts', IgPostViewSet)
+router.register(r'mediaposts', MediaPostViewSet)
+
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(router.urls)),
     path('api-auth/', include('rest_framework.urls', namespace = 'rest_framework')),
-    path('', include)
+    path('line-webhook/', LineWebHookView.as_view())
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+

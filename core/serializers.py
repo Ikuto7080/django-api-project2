@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from core.models import Account, FbPost, IgPost
+from core.models import Account, FbPost, IgPost, MediaPost
 import uuid
 import facebook
 import requests
@@ -23,13 +23,14 @@ class AccountSerializer(serializers.ModelSerializer):
     redirect_uri = serializers.URLField(required=False, write_only=True)
     class Meta:
         model = Account
-        fields = ['id', 'user', 'fb_token' , 'ig_token', 'fb_code', 'ig_code', 'fb_id', 'ig_id', 'redirect_uri']
+        fields = ['id', 'user', 'fb_token' , 'ig_token', 'fb_code', 'ig_code', 'fb_id', 'ig_id', 'redirect_uri', 'line_user_id']
         read_only_fields = ['user', 'fb_token', 'ig_token', 'fb_id', 'ig_id']
 
     def create(self, validated_data):
           fb_code = validated_data.get("fb_code")
           ig_code = validated_data.get("ig_code")
-          redirect_uri = validated_data.get("redirect_uri")
+          redirect_uri = validated_data.get("redirect_uri", "https://localhost:8080/insta/")
+          line_user_id = validated_data.get("line_user_id")
           if fb_code:
                 url = "https://graph.facebook.com/v9.0/oauth/access_token"
                 params = {
@@ -60,6 +61,7 @@ class AccountSerializer(serializers.ModelSerializer):
                 account.user = user
                 account.fb_id = profile['id']
                 account.fb_token = fb_token
+                account.line_user_id = line_user_id
                 account.save()
                 get_fb_post.delay(account.id)
                 return account
@@ -80,9 +82,11 @@ class AccountSerializer(serializers.ModelSerializer):
                 account.user = user
                 account.ig_id = ig_profile['id']
                 account.ig_token = auth_token['access_token']
+                account.line_user_id = line_user_id
                 account.save()
                 get_ig_post.delay(account.id)
                 return account
+                
           else:
                 raise serializers.ValidationError('Be specify fb_token or ig_token')
 
@@ -111,7 +115,19 @@ class IgPostSerializer(serializers.ModelSerializer):
     media_url = serializers.URLField(required=False)
     class Meta:
         model = IgPost
-        fields = ['id', 'user', 'media_url']
+        fields = ['id', 'user', 'media_url', 'permalink', 'place_id', 'latitude', 'longitude', 'location_name']
+
+
+class MediaPostSerializer(serializers.ModelSerializer):
+    image_name = serializers.CharField(required=False)
+    image = serializers.ImageField(required=False)
+    class Meta:
+        model = MediaPost
+        fields = ['id', 'user', 'image_name','image']
+
+
+
+
 
 
 

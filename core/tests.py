@@ -1,21 +1,16 @@
-# -*- coding: utf-8 -*-
-from core.models import Account, Post
-import facebook
+import requests
+import datetime
+
+url = "https://scontent-nrt1-1.cdninstagram.com/v/t51.29350-15/109130871_149225830105794_6871359187132379915_n.jpg?_nc_cat=107&ccb=1-3&_nc_sid=8ae9d6&_nc_ohc=QnKpVyNkJ7YAX-2HEmk&_nc_ht=scontent-nrt1-1.cdninstagram.com&oh=cca63e1391b65a1478c5e97d445336cb&oe=606F1FBB"
+now = datetime.datetime.now()
+# print(now)
+time_now = "{0:%Y%m%d_%H%M-%S_%f}".format(now) + ".jpg"
+print(time_now)
+file_name = time_now
 
 
-account = Account.objects.filter(id=14).first()
-user = account.user
-post = Post()
-post.user = user
-token = account.fb_token
-graph = facebook.GraphAPI(token)
-#fields = ['first_name', 'location{location}','email','link']
-profile = graph.get_object('me', fields='first_name, last_name, location,link,email, posts{full_picture,message}')
-post_urls = profile["posts"]["data"]
-post_url = post_urls[1]
-post.post_url = post_url.values()
-post.save()
-# for post_url in post_urls:
-#     print(post_url.values(1))
+response = requests.get(url)
+image = response.content
 
-print(post.post_url)
+with open(file_name, "wb") as aaa:
+    aaa.write(image)
