@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from core.models import Account, FbPost, IgPost, MediaPost
+from core.models import Account, FbPost, IgPost
 import uuid
 import facebook
 import requests
@@ -115,16 +115,7 @@ class IgPostSerializer(serializers.ModelSerializer):
     media_url = serializers.URLField(required=False)
     class Meta:
         model = IgPost
-        fields = ['id', 'user', 'media_url', 'permalink', 'place_id', 'latitude', 'longitude', 'location_name']
-
-
-class MediaPostSerializer(serializers.ModelSerializer):
-    image_name = serializers.CharField(required=False)
-    image = serializers.ImageField(required=False)
-    class Meta:
-        model = MediaPost
-        fields = ['id', 'user', 'image_name','image']
-
+        fields = ['id', 'user', 'media_url', 'permalink', 'image' ,'place_id', 'latitude', 'longitude', 'location_name']
 
 
 

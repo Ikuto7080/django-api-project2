@@ -4,7 +4,9 @@ from core.models import Account, FbPost, IgPost
 from instagram_basic_display.InstagramBasicDisplay import InstagramBasicDisplay
 import requests
 import facebook
-import requests
+from urllib import request
+import uuid
+from django.core.files import File
 from bs4 import BeautifulSoup
 from instascrape import *
 
@@ -51,8 +53,11 @@ def get_ig_post(account_id):
     json_string = json_string.split('"')[1]
     print(media_url)
     post.media_url = media_url
-    post.image = media_url
     post.permalink = permalink
+    result = request.urlretrieve(media_url)
+    f = open(result[0], 'rb')
+    ig_file = File(f)
+    post.image.save(str(uuid.uuid4()), ig_file)
     post.place_id = json_string
     url = 'https://www.instagram.com/explore/locations/' + str(json_string) + '/'
     place = Location(url)
@@ -61,5 +66,4 @@ def get_ig_post(account_id):
     post.longitude = place.longitude
     post.location_name = place.name
     post.save()
-    
 

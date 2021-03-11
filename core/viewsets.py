@@ -1,8 +1,8 @@
 from django.contrib.auth.models import User
 from rest_framework import viewsets, permissions
 from rest_framework.permissions import AllowAny
-from core.serializers import UserSerializer, AccountSerializer, FbPostSerializer, IgPostSerializer, MediaPostSerializer
-from core.models import Account, FbPost, IgPost, MediaPost
+from core.serializers import UserSerializer, AccountSerializer, FbPostSerializer, IgPostSerializer
+from core.models import Account, FbPost, IgPost
 
 
 
@@ -38,14 +38,6 @@ class IgPostViewSet(viewsets.ModelViewSet):
     queryset = IgPost.objects.all()
     serializer_class = IgPostSerializer
     permissions_classes = [AllowAny]
-
-class MediaPostViewSet(viewsets.ModelViewSet):
-    queryset = MediaPost.objects.all()
-    serializer_class = MediaPostSerializer
-    permissions_classes = [AllowAny]
-
-  
-
 
 
 

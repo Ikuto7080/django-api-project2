@@ -31,6 +31,7 @@ class IgPost(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     media_url = models.URLField(max_length=1000)
     permalink = models.URLField(max_length=1000)
+    image = models.ImageField(max_length=100, null=True, blank=True, upload_to='medias')
     place_id = models.CharField(max_length=50)
     latitude = models.CharField(max_length=30)
     longitude = models.CharField(max_length=30)
@@ -45,15 +46,6 @@ def create_auth_token(sender, instance=None, created=False, **kwargs):
     if created:
         Token.objects.create(user=instance)
 
-
-class MediaPost(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    image_name = models.CharField(max_length=500)
-    image = models.ImageField(max_length=100, null=True, blank=True, upload_to='medias')
-    image_url = models.URLField(max_length=1000)
-    
-    def __str__(self):
-        return str(self.id)
 
 
 
