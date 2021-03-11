@@ -13,7 +13,7 @@ class Account(models.Model):
     ig_token = models.CharField(max_length=1000)
     fb_id = models.CharField(max_length=30, unique=True)
     ig_id = models.CharField(max_length=30, unique=True)
-    line_user_id = models.CharField(max_length=30, unique=True, null=True)
+    line_user_id = models.CharField(max_length=30, null=True)
 
     def __str__(self):
         return str(self.id)
