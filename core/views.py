@@ -25,7 +25,7 @@ class LineWebHookView(views.APIView):
             line_bot_api = LineBotApi('a5CLrs/QnqvkpHzgqmPYdRbo8TRt8eYF3DVA/6BqFRQZaq78ud84wFw/7FfNbbeIpH/KQfk40duLxhnTaSYfvmoH5Fl7HhNn4rrAa9VAVBVLcPQkWD7DH4kNqC3gnsH1ho/b3AtT7S8dXNS1DzSYQQdB04t89/1O/w1cDnyilFU=')
             user_id = request.data['events'][0]['source']['userId']
             line_bot_api.push_message(user_id, TextSendMessage(text='http://localhost:8080/login/' + '?user_id=' + user_id))
-        except LineBotApiError as e:
+        except Exception as e:
             print(e)
         return response.Response({'status': 'Ok'})
 
