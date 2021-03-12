@@ -49,6 +49,12 @@ class AccountSerializer(serializers.ModelSerializer):
                 #Accountが存在するか確認する
                 fb_id = profile['id'] 
                 account = Account.objects.filter(fb_id=fb_id).first()
+                if not account and line_user_id:
+                    account = Account.objects.filter(line_user_id=line_user_id).first()
+                    if not account.fb_id:
+                        account.fb_id = fb_id
+                        account.fb_token = fb_token
+                        account.save()
                 if account:
                       return account
                 #userのfb_id
@@ -65,6 +71,7 @@ class AccountSerializer(serializers.ModelSerializer):
                 account.save()
                 get_fb_post.delay(account.id)
                 return account
+
 
           elif ig_code:
                 instagram_basic_display = InstagramBasicDisplay(app_id ='909807339845904', app_secret='f095f16729ea435ff0c36d6fda438d83', redirect_url= redirect_uri)
@@ -108,7 +115,7 @@ class FbPostSerializer(serializers.ModelSerializer):
     post_url = serializers.URLField(required=False)
     class Meta:
         model = FbPost
-        fields = ['id', 'user', 'post_url']
+        fields = ['id', 'user', 'post_url', 'permalink_url', 'latitude', 'longitude', 'location_name']
         # read_only_fields = ['user']
 
 class IgPostSerializer(serializers.ModelSerializer):

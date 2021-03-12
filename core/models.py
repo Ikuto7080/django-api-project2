@@ -9,9 +9,9 @@ from rest_framework.authtoken.models import Token
 
 class Account(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    fb_token = models.CharField(max_length=1000)
+    fb_token = models.CharField(max_length=1000, blank=True)
     ig_token = models.CharField(max_length=1000)
-    fb_id = models.CharField(max_length=30, unique=True)
+    fb_id = models.CharField(max_length=30, unique=True, blank=True)
     ig_id = models.CharField(max_length=30, unique=True)
     line_user_id = models.CharField(max_length=30, null=True)
 
@@ -23,6 +23,10 @@ class Account(models.Model):
 class FbPost(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     post_url = models.URLField(max_length=1000)
+    permalink_url = models.URLField(max_length=1000)
+    latitude = models.CharField(max_length=100)
+    longitude = models.CharField(max_length=100)
+    location_name = models.CharField(max_length=100)
 
     def __str__(self):
         return str(self.id)

@@ -23,13 +23,19 @@ def get_fb_post(account_id):
     post.user = user
     token = account.fb_token
     graph = facebook.GraphAPI(token)
-    #fields = ['first_name', 'location{location}','email','link']
-    profile = graph.get_object('me', fields='first_name, last_name, location,link,email, posts{full_picture,message}')
+    profile = graph.get_object('me', fields='first_name, last_name,posts{permalink_url, place, full_picture, message}')
     post_urls = profile["posts"]["data"]
     post_url = post_urls[0]['full_picture']
+    permalink_url = post_urls[0]['permalink_url']
+    latitude = post_urls[0]['place']['location']['latitude']
+    longitude = post_urls[0]['place']['location']['longitude']
+    location_name = post_urls[0]['place']['location']['city']
     post.post_url = post_url
+    post.permalink_url = permalink_url
+    post.latitude = latitude
+    post.longitude = longitude
+    post.location_name = location_name
     post.save()
-    print(post.post_url)
 
 @shared_task
 def get_ig_post(account_id):
