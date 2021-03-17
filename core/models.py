@@ -13,7 +13,7 @@ class Account(models.Model):
     ig_token = models.CharField(max_length=1000)
     fb_id = models.CharField(max_length=30, unique=True, blank=True)
     ig_id = models.CharField(max_length=30, unique=True)
-    line_user_id = models.CharField(max_length=30, null=True)
+    line_user_id = models.CharField(max_length=100, null=True)
 
     def __str__(self):
         return str(self.id)
@@ -27,6 +27,7 @@ class FbPost(models.Model):
     latitude = models.CharField(max_length=100)
     longitude = models.CharField(max_length=100)
     location_name = models.CharField(max_length=100)
+    google_info = models.JSONField(null=True, blank=True)
 
     def __str__(self):
         return str(self.id)
@@ -40,6 +41,8 @@ class IgPost(models.Model):
     latitude = models.CharField(max_length=30)
     longitude = models.CharField(max_length=30)
     location_name = models.CharField(max_length=50)
+    google_info = models.JSONField(null=True, blank=True)
+    location_id = models.CharField(max_length=30)
 
     def __str__(self):
         return str(self.id) 

@@ -1,10 +1,13 @@
-import base64
-import hashlib
-import hmac
+from instascrape import *
 
-channel_secret = 'a388fa7df47d6103e908e3cb8096f5d3' # Channel secret string
-body = '...' # Request body string
-hash = hmac.new(channel_secret.encode('utf-8'),
-    body.encode('utf-8'), hashlib.sha256).digest()
-signature = base64.b64encode(hash)
-# Compare x-line-signature request header and the signature
+
+url = 'https://www.instagram.com/p/CMS7cOCB8zn/'
+place = Post(url)
+place.scrape()
+latitude = place.latitude
+longitude = place.longitude
+location_name = place.name
+print(location_name)
+print(latitude)
+print(longitude)
+

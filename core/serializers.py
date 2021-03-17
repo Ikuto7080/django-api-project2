@@ -51,9 +51,10 @@ class AccountSerializer(serializers.ModelSerializer):
                 account = Account.objects.filter(fb_id=fb_id).first()
                 if not account and line_user_id:
                     account = Account.objects.filter(line_user_id=line_user_id).first()
-                    if not account.fb_id:
+                    if account and not account.fb_id:
                         account.fb_id = fb_id
                         account.fb_token = fb_token
+                        get_fb_post.delay(account.id)
                         account.save()
                 if account:
                       return account
@@ -72,16 +73,22 @@ class AccountSerializer(serializers.ModelSerializer):
                 get_fb_post.delay(account.id)
                 return account
 
-
           elif ig_code:
                 instagram_basic_display = InstagramBasicDisplay(app_id ='909807339845904', app_secret='f095f16729ea435ff0c36d6fda438d83', redirect_url= redirect_uri)
                 auth_token = instagram_basic_display.get_o_auth_token(ig_code)
                 instagram_basic_display.set_access_token(auth_token['access_token'])
                 ig_profile = instagram_basic_display.get_user_profile()
-                ig_id = ig_profile['id'] 
+                ig_id = ig_profile['id']
                 account = Account.objects.filter(ig_id=ig_id).first()
+                if not account and line_user_id:
+                    account = Account.objects.filter(line_user_id=line_user_id).first()
+                    if account and not account.ig_id:
+                        account.ig_id = ig_id
+                        account.ig_token = auth_token['access_token']
+                        get_ig_post.delay(account.id)
+                        account.save()
                 if account:
-                      return account  
+                      return account 
                 user = User(username=str(uuid.uuid4()))
                 user.first_name = ig_profile['username']
                 user.save()
@@ -105,7 +112,6 @@ class AccountSerializer(serializers.ModelSerializer):
             token = Token(user=account.user)
             token.save()
         output['token'] = token.key
-        print(output)
         return output
 
     # def update(self, )
@@ -115,14 +121,13 @@ class FbPostSerializer(serializers.ModelSerializer):
     post_url = serializers.URLField(required=False)
     class Meta:
         model = FbPost
-        fields = ['id', 'user', 'post_url', 'permalink_url', 'latitude', 'longitude', 'location_name']
-        # read_only_fields = ['user']
+        fields = ['id', 'user', 'post_url', 'permalink_url', 'latitude', 'longitude', 'location_name', 'google_info']
 
 class IgPostSerializer(serializers.ModelSerializer):
     media_url = serializers.URLField(required=False)
     class Meta:
         model = IgPost
-        fields = ['id', 'user', 'media_url', 'permalink', 'image' ,'place_id', 'latitude', 'longitude', 'location_name']
+        fields = ['id', 'user', 'media_url', 'permalink', 'image' ,'place_id', 'latitude', 'longitude', 'location_name', 'google_info', 'location_id']
 
 
 

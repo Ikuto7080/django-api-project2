@@ -1,16 +1,19 @@
 import requests
-import datetime
+url = "https://maps.googleapis.com/maps/api/place/findplacefromtext/json?&key=AIzaSyCh-n6Zenl66RuVS6c9N4xEKKG9-boLa7I"
 
-url = "https://scontent-nrt1-1.cdninstagram.com/v/t51.29350-15/109130871_149225830105794_6871359187132379915_n.jpg?_nc_cat=107&ccb=1-3&_nc_sid=8ae9d6&_nc_ohc=QnKpVyNkJ7YAX-2HEmk&_nc_ht=scontent-nrt1-1.cdninstagram.com&oh=cca63e1391b65a1478c5e97d445336cb&oe=606F1FBB"
-now = datetime.datetime.now()
-# print(now)
-time_now = "{0:%Y%m%d_%H%M-%S_%f}".format(now) + ".jpg"
-print(time_now)
-file_name = time_now
+params = {
+    'input': '神戸三宮',
+    'inputtype': 'textquery',
+    'fields': 'name,types',
+    'locationbias':'point:34.6956056791,135.197755581'
+}
 
-
-response = requests.get(url)
-image = response.content
-
-with open(file_name, "wb") as aaa:
-    aaa.write(image)
+r = requests.get(url, params=params)
+form = r.json()
+# print(form)
+name = form['candidates'][0]['name']
+types = form['candidates'][0]['types']
+for i in types:
+    print(i)
+# print(name)
+# print(types)
