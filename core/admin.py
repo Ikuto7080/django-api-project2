@@ -1,5 +1,5 @@
 from django.contrib import admin
-from core.models import Account, ALLPost, GooglePlace, IgLocation, Post, PostImage, Profile, Relationship
+from core.models import Account, ALLPost, GooglePlace, IgLocation, Post, PostImage, Profile, Relationship, ApiSetting
 
 
 class AccountAdmin(admin.ModelAdmin):
@@ -14,5 +14,6 @@ admin.site.register(Post)
 admin.site.register(PostImage)
 admin.site.register(Profile)
 admin.site.register(Relationship)
+admin.site.register(ApiSetting)
 
 

@@ -49,6 +49,7 @@ class Account(models.Model):
     line_user_id = models.CharField(max_length=100, null=True)
 
 
+
     def __str__(self):
         return str(self.id)
 
@@ -98,6 +99,14 @@ class PostImage(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
     url = models.URLField(max_length=1000, null=True, blank=True)
     image = models.ImageField(null=True, blank=1000, upload_to='postimage/')
+
+
+class ApiSetting(models.Model):
+    name = models.CharField(max_length=100, blank=True)
+    value = models.CharField(max_length=1000, blank=True)
+
+    def __str__(self):
+        return self.name
 
     
 

@@ -4,6 +4,7 @@ from rest_framework import views, response
 from linebot import LineBotApi
 from linebot.models import TextSendMessage
 from linebot.exceptions import LineBotApiError
+from core.models import ApiSetting
 
 # importしたときに内容が表示されない
 
@@ -22,12 +23,14 @@ if __name__ == '__main__':
 class LineWebHookView(views.APIView):
     def post(self, request):
         try:
-            line_bot_api = LineBotApi('OvDbZDGVmDjD0r38Y6RQCSna0V6fuGHckqKMbcxLoA3a1y0Yf4fadCCY84bYR41fK8J4CTBwYUjwO8TIyZwY+xYbp3UFRPYfIfgkuA57PaDXXMnib8/16ZMnvO7rDLjZxrnhtbj59il5tY8C2BWYbgdB04t89/1O/w1cDnyilFU=')
+            line_token = ApiSetting.objects.get(name="line_channel_token")
+            line_bot_api = LineBotApi(line_token.value)
             user_id = request.data['events'][0]['source']['userId']
             text = request.data['events'][0]['message']['text']
             try:
                 request_id = int(text.split('=')[-1])
-                line_bot_api.push_message(user_id, TextSendMessage(text='http://localhost:8080/login/' + '?user_id=' + user_id + '&account_id=' + request_id))
+                print(request_id)
+                line_bot_api.push_message(user_id, TextSendMessage(text='http://localhost:8080/login/' + '?user_id=' + user_id + '&account_id=' + str(request_id)))
             except:
                 line_bot_api.push_message(user_id, TextSendMessage(text='http://localhost:8080/login/' + '?user_id=' + user_id))
         except Exception as e:

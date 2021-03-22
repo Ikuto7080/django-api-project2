@@ -2,3 +2,4 @@
 staticfiles
 *.pyc
 db.sqlite3
+media/
