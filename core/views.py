@@ -22,12 +22,20 @@ if __name__ == '__main__':
 class LineWebHookView(views.APIView):
     def post(self, request):
         try:
-            line_bot_api = LineBotApi('a5CLrs/QnqvkpHzgqmPYdRbo8TRt8eYF3DVA/6BqFRQZaq78ud84wFw/7FfNbbeIpH/KQfk40duLxhnTaSYfvmoH5Fl7HhNn4rrAa9VAVBVLcPQkWD7DH4kNqC3gnsH1ho/b3AtT7S8dXNS1DzSYQQdB04t89/1O/w1cDnyilFU=')
+            line_bot_api = LineBotApi('OvDbZDGVmDjD0r38Y6RQCSna0V6fuGHckqKMbcxLoA3a1y0Yf4fadCCY84bYR41fK8J4CTBwYUjwO8TIyZwY+xYbp3UFRPYfIfgkuA57PaDXXMnib8/16ZMnvO7rDLjZxrnhtbj59il5tY8C2BWYbgdB04t89/1O/w1cDnyilFU=')
             user_id = request.data['events'][0]['source']['userId']
-            line_bot_api.push_message(user_id, TextSendMessage(text='http://localhost:8080/login/' + '?user_id=' + user_id))
+            text = request.data['events'][0]['message']['text']
+            try:
+                request_id = int(text.split('=')[-1])
+                line_bot_api.push_message(user_id, TextSendMessage(text='http://localhost:8080/login/' + '?user_id=' + user_id + '&account_id=' + request_id))
+            except:
+                line_bot_api.push_message(user_id, TextSendMessage(text='http://localhost:8080/login/' + '?user_id=' + user_id))
         except Exception as e:
             print(e)
         return response.Response({'status': 'Ok'})
+
+
+
 
 
 

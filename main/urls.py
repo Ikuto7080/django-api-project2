@@ -22,7 +22,7 @@ from django.conf.urls.static import static
 
 
 from rest_framework import routers
-from core.viewsets import UserViewSet, AccountViewSet, FbPostViewSet, IgPostViewSet
+from core.viewsets import UserViewSet, AccountViewSet, ALLPostViewSet, GooglePlaceViewSet, PostViewSet, ProfileViewSet, RelationshipViewSet
 
 from core.views import LineWebHookView
 from django.urls import path, include
@@ -32,8 +32,12 @@ from django.urls import path, include
 router = routers.DefaultRouter()
 router.register(r'users', UserViewSet)
 router.register(r'accounts', AccountViewSet)
-router.register(r'fbposts', FbPostViewSet)
-router.register(r'igposts', IgPostViewSet)
+router.register(r'allposts', ALLPostViewSet)
+router.register(r'restaurants', GooglePlaceViewSet)
+router.register(r'posts', PostViewSet)
+router.register(r'profiles', ProfileViewSet)
+router.register(r'relationships', RelationshipViewSet)
+
 
 
 

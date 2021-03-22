@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from core.models import Account, FbPost, IgPost
+from core.models import Account, ALLPost, GooglePlace, Post, PostImage, Profile, Relationship
 import uuid
 import facebook
 import requests
@@ -21,9 +21,10 @@ class AccountSerializer(serializers.ModelSerializer):
     ig_code = serializers.CharField(required=False, write_only=True)
     user = UserSerializer(read_only=True)
     redirect_uri = serializers.URLField(required=False, write_only=True)
+    follow_line_id = serializers.CharField(required=False, write_only=True)
     class Meta:
         model = Account
-        fields = ['id', 'user', 'fb_token' , 'ig_token', 'fb_code', 'ig_code', 'fb_id', 'ig_id', 'redirect_uri', 'line_user_id']
+        fields = ['id', 'user', 'fb_token' , 'ig_token', 'fb_code', 'ig_code', 'fb_id', 'ig_id', 'redirect_uri', 'line_user_id', 'follow_line_id']
         read_only_fields = ['user', 'fb_token', 'ig_token', 'fb_id', 'ig_id']
 
     def create(self, validated_data):
@@ -31,6 +32,8 @@ class AccountSerializer(serializers.ModelSerializer):
           ig_code = validated_data.get("ig_code")
           redirect_uri = validated_data.get("redirect_uri", "https://localhost:8080/insta/")
           line_user_id = validated_data.get("line_user_id")
+          follow_line_id = validated_data.get("follow_line_id")
+
           if fb_code:
                 url = "https://graph.facebook.com/v9.0/oauth/access_token"
                 params = {
@@ -56,6 +59,8 @@ class AccountSerializer(serializers.ModelSerializer):
                         account.fb_token = fb_token
                         get_fb_post.delay(account.id)
                         account.save()
+                        
+
                 if account:
                       return account
                 #userのfb_id
@@ -71,10 +76,13 @@ class AccountSerializer(serializers.ModelSerializer):
                 account.line_user_id = line_user_id
                 account.save()
                 get_fb_post.delay(account.id)
+                if follow_line_id:
+                    follow_account = Account.objects.filter(line_user_id=follow_line_id).first()
+                    follow_account.user.profile.friends.add(account.user)
                 return account
 
-          elif ig_code:
-                instagram_basic_display = InstagramBasicDisplay(app_id ='909807339845904', app_secret='f095f16729ea435ff0c36d6fda438d83', redirect_url= redirect_uri)
+          elif ig_code:                       
+                instagram_basic_display = InstagramBasicDisplay(app_id ='128183525822395', app_secret='7c0f1ebb5832df8f18b09bcd5ddbc133', redirect_url= redirect_uri)
                 auth_token = instagram_basic_display.get_o_auth_token(ig_code)
                 instagram_basic_display.set_access_token(auth_token['access_token'])
                 ig_profile = instagram_basic_display.get_user_profile()
@@ -99,6 +107,9 @@ class AccountSerializer(serializers.ModelSerializer):
                 account.line_user_id = line_user_id
                 account.save()
                 get_ig_post.delay(account.id)
+                if follow_line_id:
+                    follow_account = Account.objects.filter(line_user_id=follow_line_id).first()
+                    follow_account.user.profile.friends.add(account.user)
                 return account
                 
           else:
@@ -116,19 +127,50 @@ class AccountSerializer(serializers.ModelSerializer):
 
     # def update(self, )
 
-class FbPostSerializer(serializers.ModelSerializer):
-    # user = UserSerializer(read_only=True)
-    post_url = serializers.URLField(required=False)
+class ALLPostSerializer(serializers.ModelSerializer):
     class Meta:
-        model = FbPost
-        fields = ['id', 'user', 'post_url', 'permalink_url', 'latitude', 'longitude', 'location_name', 'google_info']
+        model = ALLPost
+        fields = ['id', 'user', 'media_url', 'post_url', 'latitude', 'longitude', 'location_name', 'fb_permalink', 'ig_permalink', 'image', 'google_info', 'place_id', 'location_id', 'message']
 
-class IgPostSerializer(serializers.ModelSerializer):
-    media_url = serializers.URLField(required=False)
+
+class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
-        model = IgPost
-        fields = ['id', 'user', 'media_url', 'permalink', 'image' ,'place_id', 'latitude', 'longitude', 'location_name', 'google_info', 'location_id']
+        model = Profile
+        fields = ['id', 'user', 'friends']
 
+class RelationshipSerialzier(serializers.ModelSerializer):
+    class Meta:
+        model = Relationship
+        fields = ['sender', 'receiver', 'status', 'updated', 'created']
+
+class GooglePlaceSerializer(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField()
+    class Meta:
+        model = GooglePlace
+        fields = ['id', 'info', 'place_id', 'latitude', 'longitude','image']
+    
+    def get_image(self, obj):
+        post_image = PostImage.objects.filter(post__google_place=obj).order_by('-id').first()
+        if not post_image:
+            return ''
+        return post_image.url
+
+class PostImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PostImage
+        fields = ['id', 'url']
+
+
+
+class PostSerializer(serializers.ModelSerializer):
+    images = PostImageSerializer(source='postimage_set', many=True)
+    user = UserSerializer(read_only=True)
+    google_place = GooglePlaceSerializer(read_only=True)
+
+    class Meta:
+        model = Post
+        fields = ['id', 'user', 'google_place', 'type', 'permalink', 'message', 'ig_id', 'images']
+        
 
 
 
