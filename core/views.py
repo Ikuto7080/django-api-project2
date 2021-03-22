@@ -1,5 +1,6 @@
 import json
 import facebook
+import os
 from rest_framework import views, response
 from linebot import LineBotApi
 from linebot.models import TextSendMessage
@@ -29,10 +30,10 @@ class LineWebHookView(views.APIView):
             text = request.data['events'][0]['message']['text']
             try:
                 request_id = int(text.split('=')[-1])
-                print(request_id)
-                line_bot_api.push_message(user_id, TextSendMessage(text='http://localhost:8080/login/' + '?user_id=' + user_id + '&account_id=' + str(request_id)))
+                domain_url = os.environ.get('DOMAIN_URL', 'http://localhost:8080')
+                line_bot_api.push_message(user_id, TextSendMessage(text=domain_url + '/login/?user_id=' + user_id + '&account_id=' + str(request_id)))
             except:
-                line_bot_api.push_message(user_id, TextSendMessage(text='http://localhost:8080/login/' + '?user_id=' + user_id))
+                line_bot_api.push_message(user_id, TextSendMessage(text=domain_url + '/login/?user_id=' + user_id))
         except Exception as e:
             print(e)
         return response.Response({'status': 'Ok'})
