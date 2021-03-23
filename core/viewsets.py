@@ -44,12 +44,12 @@ class AccountViewSet(viewsets.ModelViewSet):
 class ALLPostViewSet(viewsets.ModelViewSet):
     queryset = ALLPost.objects.all()
     serializer_class = ALLPostSerializer
-    permissions_classes = [AllowAny]
+    permissions_classes = [permissions.AllowAny()]
 
 class GooglePlaceViewSet(viewsets.ModelViewSet):
     queryset = GooglePlace.objects.all()
     serializer_class = GooglePlaceSerializer
-    permissions_classes = [AllowAny]
+    permissions_classes = [permissions.AllowAny()]
     
 
 class PostViewSet(viewsets.ModelViewSet):
@@ -71,7 +71,7 @@ class PostViewSet(viewsets.ModelViewSet):
 class RelationshipViewSet(viewsets.ModelViewSet):
     queryset = Relationship.objects.all()
     serializer_class = RelationshipSerialzier
-    permissions_classes = [AllowAny]
+    permissions_classes = [permissions.AllowAny()]
 
 
 
