@@ -3,6 +3,7 @@ from rest_framework import viewsets, permissions
 from rest_framework.permissions import AllowAny
 from core.serializers import UserSerializer, AccountSerializer, ALLPostSerializer, GooglePlaceSerializer, PostSerializer, ProfileSerializer, RelationshipSerialzier
 from core.models import Account, ALLPost, GooglePlace, Post, Profile, Relationship
+from django.db.models import Q
 
 
 
@@ -73,6 +74,23 @@ class RelationshipViewSet(viewsets.ModelViewSet):
     serializer_class = RelationshipSerialzier
     permissions_classes = [permissions.AllowAny()]
 
+
+class FeedViewSet(viewsets.ModelViewSet):
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        user_id = self.request.query_params.get('user_id')
+        if user_id is not None:
+             queryset = self.queryset.filter(user_id=user_id)
+             return queryset        
+        google_place = self.request.query_params.get('google_place')
+        if google_place is not None:
+             queryset = self.queryset.filter(google_place=google_place)
+             return queryset
+        queryset = self.queryset.filter(Q(user=self.request.user) | Q(user__in=self.request.user.profile.friends.all()))     
+        return queryset
 
 
 

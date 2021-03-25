@@ -83,7 +83,7 @@ class AccountSerializer(serializers.ModelSerializer):
 
           elif ig_code:
               #128183525822395, 7c0f1ebb5832df8f18b09bcd5ddbc133
-                instagram_basic_display = InstagramBasicDisplay(app_id ='909807339845904', app_secret='f095f16729ea435ff0c36d6da439d83', redirect_url= redirect_uri)
+                instagram_basic_display = InstagramBasicDisplay(app_id ='909807339845904', app_secret='f095f16729ea435ff0c36d6fda438d83', redirect_url= redirect_uri)
                 auth_token = instagram_basic_display.get_o_auth_token(ig_code)
                 instagram_basic_display.set_access_token(auth_token['access_token'])
                 ig_profile = instagram_basic_display.get_user_profile()
@@ -135,9 +135,12 @@ class ALLPostSerializer(serializers.ModelSerializer):
 
 
 class ProfileSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+    friends = UserSerializer(many=True)
     class Meta:
         model = Profile
         fields = ['id', 'user', 'friends']
+        
 
 class RelationshipSerialzier(serializers.ModelSerializer):
     class Meta:

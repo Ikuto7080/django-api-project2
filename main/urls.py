@@ -22,8 +22,9 @@ from django.conf.urls.static import static
 
 
 from rest_framework import routers
-from core.viewsets import UserViewSet, AccountViewSet, ALLPostViewSet, GooglePlaceViewSet, PostViewSet, ProfileViewSet, RelationshipViewSet
+from core.viewsets import UserViewSet, AccountViewSet, ALLPostViewSet, GooglePlaceViewSet, PostViewSet, ProfileViewSet, RelationshipViewSet, FeedViewSet
 
+from core.filters import ProfileList
 from core.views import LineWebHookView
 from django.urls import path, include
 
@@ -37,6 +38,7 @@ router.register(r'restaurants', GooglePlaceViewSet)
 router.register(r'posts', PostViewSet)
 router.register(r'profiles', ProfileViewSet)
 router.register(r'relationships', RelationshipViewSet)
+router.register(r'feeds', FeedViewSet)
 
 
 
@@ -46,7 +48,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(router.urls)),
     path('api-auth/', include('rest_framework.urls', namespace = 'rest_framework')),
-    path('line-webhook/', LineWebHookView.as_view())
+    path('line-webhook/', LineWebHookView.as_view()),
+    path('profile-list/', ProfileList.as_view())
 ]
 
 if settings.DEBUG:
