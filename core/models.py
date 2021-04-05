@@ -18,29 +18,14 @@ class Profile(models.Model):
     def __str__(self):
         return str(self.user)
 
-STATUS_CHOICES = (
-    ('send', 'send'),
-    ('accepted', 'accepted')
-)
-
-class Relationship(models.Model):
-    sender = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='sender')
-    receiver = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='receiver')
-    status = models.CharField(max_length=8, choices=STATUS_CHOICES)
-    updated = models.DateTimeField(auto_now=True)
-    created = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"{self.sender}-{self.receiver}-{self.status}"
-
 
 class Account(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
-    fb_token = models.CharField(max_length=1000, blank=True)
-    ig_token = models.CharField(max_length=1000)
-    fb_id = models.CharField(max_length=30, unique=True, blank=True)
-    ig_id = models.CharField(max_length=30, unique=True)
+    fb_token = models.CharField(max_length=1000, null=True, blank=True)
+    ig_token = models.CharField(max_length=1000, null=True, blank=True)
+    fb_id = models.CharField(max_length=30, unique=True, null=True, blank=True)
+    ig_id = models.CharField(max_length=30, null=True, blank=True)
     line_user_id = models.CharField(max_length=100, null=True)
 
 
@@ -88,6 +73,7 @@ class Post(models.Model):
     permalink = models.URLField(max_length=1000)
     message = models.CharField(max_length=1000, null=True, blank=True)
     ig_id = models.CharField(max_length=1000)
+    categories = models.CharField(max_length=100, null=True, blank=True)
 
 
 class PostImage(models.Model):

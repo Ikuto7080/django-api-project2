@@ -9,3 +9,7 @@ try:
     print(message)
 except LineBotApiError as e:
     print(e)
+
+
+
+Installing collected packages: psycopg2, dj-database-url, django-heroku

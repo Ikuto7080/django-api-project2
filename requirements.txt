@@ -22,3 +22,5 @@ Celery==5.0.5
 insta-scrape==2.1.2
 line-bot-sdk==1.19.0
 Pillow==8.1.0
+Ipython==7.22
+

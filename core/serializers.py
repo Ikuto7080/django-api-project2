@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from core.models import Account, ALLPost, GooglePlace, Post, PostImage, Profile, Relationship
+from core.models import Account, ALLPost, GooglePlace, Post, PostImage, Profile
 import uuid
 import facebook
 import requests
@@ -142,11 +142,6 @@ class ProfileSerializer(serializers.ModelSerializer):
         fields = ['id', 'user', 'friends']
         
 
-class RelationshipSerialzier(serializers.ModelSerializer):
-    class Meta:
-        model = Relationship
-        fields = ['sender', 'receiver', 'status', 'updated', 'created']
-
 class GooglePlaceSerializer(serializers.ModelSerializer):
     image = serializers.SerializerMethodField()
     class Meta:
@@ -173,7 +168,13 @@ class PostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ['id', 'user', 'google_place', 'type', 'permalink', 'message', 'ig_id', 'images']
+        fields = ['id', 'user', 'google_place', 'type', 'permalink', 'message', 'ig_id', 'images', 'categories']
+
+
+class FollowingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'first_name', 'last_name', 'email', 'is_staff']
         
 
 

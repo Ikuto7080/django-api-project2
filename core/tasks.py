@@ -66,7 +66,6 @@ def download_fb_post(post_url, user_id):
 
 @shared_task
 def download_fb_post_2(post_url, user_id):
-    
     try:
         full_picture = post_url['full_picture']
         fb_permalink = post_url['permalink_url']
@@ -107,6 +106,23 @@ def download_fb_post_2(post_url, user_id):
         post.message = message
         post.type = "facebook"
         post.user_id = user_id
+    # foursquare for categories
+        url = 'https://api.foursquare.com/v2/venues/search'
+        query_name = form['result']['name']
+        params = dict(
+        client_id='2FMOM2DV2E2R5E4L5D1QFL4NS4MWC3VJU4C3YU5KEAWRVM4T',
+        client_secret='THUSQ3S42S4KNIPROQEPP5VAWGBA2KXCYHSOUNJ4JZN1RGQY',
+        v='20210403',
+        ll=str(latitude) + ',' + str(longitude),
+        query=query_name,
+        limit=1
+        )
+        resp = requests.get(url=url, params=params)
+        form = resp.json()
+        category_form = form['response']['venues'][0]['categories'][0]['name']
+        post.categories = category_form
+        print(category_form)
+
         google_place = GooglePlace.objects.filter(place_id=place_id).first()
         if not google_place:
             google_place = GooglePlace(place_id=place_id, latitude=latitude, longitude=longitude)
@@ -138,8 +154,8 @@ def get_fb_post(account_id):
         # download_fb_post.delay(post_url, user.id)
         download_fb_post_2.delay(post_url, user.id)
 
-@shared_task
-def download_ig_post(ig_profile, user_id):
+# @shared_task
+# def download_ig_post(ig_profile, user_id):
     post = ALLPost()
     post.user_id = user_id
     print(ig_profile)
@@ -179,7 +195,7 @@ def download_ig_post(ig_profile, user_id):
         }
         r = requests.get(detail_url, params=params)
         form = r.json()
-        google_info=form['result']
+        google_info = form['result']
         post.google_info = google_info
         post.media_url = media_url
         post.ig_permalink = ig_permalink
@@ -245,11 +261,29 @@ def download_ig_post_2(ig_profile, user_id):
         post.ig_permalink = ig_permalink
         post.type = "instagram"
         post.user_id = user_id
+
         google_place = GooglePlace.objects.filter(place_id=place_id).first()
         if not google_place:
             google_place = GooglePlace(place_id=place_id, latitude=place.latitude, longitude=place.longitude)
         google_place.info = google_info
         google_place.save()
+
+    # foursquare for categories
+        url = 'https://api.foursquare.com/v2/venues/search'
+        params = dict(
+        client_id='2FMOM2DV2E2R5E4L5D1QFL4NS4MWC3VJU4C3YU5KEAWRVM4T',
+        client_secret='THUSQ3S42S4KNIPROQEPP5VAWGBA2KXCYHSOUNJ4JZN1RGQY',
+        v='20210403',
+        ll=str(place.latitude) + ',' + str(place.longitude),
+        query=place.name,
+        limit=1
+        )
+        resp = requests.get(url=url, params=params)
+        form = resp.json()
+        category_form = form['response']['venues'][0]['categories'][0]['name']
+        post.categories = category_form
+        print(category_form)
+
         post.google_place = google_place
         post.ig_id = json_string
         post.permalink = ig_permalink
