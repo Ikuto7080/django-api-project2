@@ -1,0 +1,90 @@
+2021-04-10 09:47:19,787:DEBUG:certbot._internal.main:certbot version: 1.14.0
+2021-04-10 09:47:19,787:DEBUG:certbot._internal.main:Location of certbot entry point: /usr/local/Cellar/certbot/1.14.0/libexec/bin/certbot
+2021-04-10 09:47:19,787:DEBUG:certbot._internal.main:Arguments: ['--config-dir', '/Users/honguuikuto/Desktop/PythonProject/django-api-project2/certbot', '--work-dir', '/Users/honguuikuto/Desktop/PythonProject/django-api-project2/certbot', '--logs-dir', '/Users/honguuikuto/Desktop/PythonProject/django-api-project2/certbot']
+2021-04-10 09:47:19,787:DEBUG:certbot._internal.main:Discovered plugins: PluginsRegistry(PluginEntryPoint#apache,PluginEntryPoint#manual,PluginEntryPoint#nginx,PluginEntryPoint#null,PluginEntryPoint#standalone,PluginEntryPoint#webroot)
+2021-04-10 09:47:19,813:DEBUG:certbot._internal.log:Root logging level set at 20
+2021-04-10 09:47:19,814:INFO:certbot._internal.log:Saving debug log to /Users/honguuikuto/Desktop/PythonProject/django-api-project2/certbot/letsencrypt.log
+2021-04-10 09:47:19,814:DEBUG:certbot._internal.plugins.selection:Requested authenticator None and installer None
+2021-04-10 09:47:19,960:DEBUG:certbot_apache._internal.configurator:Apache version is 2.4.46
+2021-04-10 09:47:20,191:WARNING:certbot_apache._internal.configurator:Could not find ssl_module; not disabling session tickets.
+2021-04-10 09:47:20,193:DEBUG:certbot_apache._internal.configurator:Encountered error:
+Traceback (most recent call last):
+  File "/usr/local/Cellar/certbot/1.14.0/libexec/vendor/lib/python3.9/site-packages/certbot_apache/_internal/configurator.py", line 371, in prepare
+    util.lock_dir_until_exit(self.option("server_root"))
+  File "/usr/local/Cellar/certbot/1.14.0/libexec/lib/python3.9/site-packages/certbot/util.py", line 151, in lock_dir_until_exit
+    _LOCKS[dir_path] = lock.lock_dir(dir_path)
+  File "/usr/local/Cellar/certbot/1.14.0/libexec/lib/python3.9/site-packages/certbot/_internal/lock.py", line 258, in lock_dir
+    return LockFile(os.path.join(dir_path, '.certbot.lock'))
+  File "/usr/local/Cellar/certbot/1.14.0/libexec/lib/python3.9/site-packages/certbot/_internal/lock.py", line 45, in __init__
+    self.acquire()
+  File "/usr/local/Cellar/certbot/1.14.0/libexec/lib/python3.9/site-packages/certbot/_internal/lock.py", line 60, in acquire
+    self._lock_mechanism.acquire()
+  File "/usr/local/Cellar/certbot/1.14.0/libexec/lib/python3.9/site-packages/certbot/_internal/lock.py", line 110, in acquire
+    fd = filesystem.open(self._path, os.O_CREAT | os.O_WRONLY, 0o600)
+  File "/usr/local/Cellar/certbot/1.14.0/libexec/lib/python3.9/site-packages/certbot/compat/filesystem.py", line 211, in open
+    return os.open(file_path, flags, mode)
+PermissionError: [Errno 13] Permission denied: '/etc/apache2/.certbot.lock'
+2021-04-10 09:47:20,196:DEBUG:certbot._internal.plugins.disco:Other error:(PluginEntryPoint#apache): Unable to create a lock file in /etc/apache2. Are you running Certbot with sufficient privileges to modify your Apache configuration?
+Traceback (most recent call last):
+  File "/usr/local/Cellar/certbot/1.14.0/libexec/vendor/lib/python3.9/site-packages/certbot_apache/_internal/configurator.py", line 371, in prepare
+    util.lock_dir_until_exit(self.option("server_root"))
+  File "/usr/local/Cellar/certbot/1.14.0/libexec/lib/python3.9/site-packages/certbot/util.py", line 151, in lock_dir_until_exit
+    _LOCKS[dir_path] = lock.lock_dir(dir_path)
+  File "/usr/local/Cellar/certbot/1.14.0/libexec/lib/python3.9/site-packages/certbot/_internal/lock.py", line 258, in lock_dir
+    return LockFile(os.path.join(dir_path, '.certbot.lock'))
+  File "/usr/local/Cellar/certbot/1.14.0/libexec/lib/python3.9/site-packages/certbot/_internal/lock.py", line 45, in __init__
+    self.acquire()
+  File "/usr/local/Cellar/certbot/1.14.0/libexec/lib/python3.9/site-packages/certbot/_internal/lock.py", line 60, in acquire
+    self._lock_mechanism.acquire()
+  File "/usr/local/Cellar/certbot/1.14.0/libexec/lib/python3.9/site-packages/certbot/_internal/lock.py", line 110, in acquire
+    fd = filesystem.open(self._path, os.O_CREAT | os.O_WRONLY, 0o600)
+  File "/usr/local/Cellar/certbot/1.14.0/libexec/lib/python3.9/site-packages/certbot/compat/filesystem.py", line 211, in open
+    return os.open(file_path, flags, mode)
+PermissionError: [Errno 13] Permission denied: '/etc/apache2/.certbot.lock'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/Cellar/certbot/1.14.0/libexec/lib/python3.9/site-packages/certbot/_internal/plugins/disco.py", line 158, in prepare
+    self._initialized.prepare()  # type: ignore
+  File "/usr/local/Cellar/certbot/1.14.0/libexec/vendor/lib/python3.9/site-packages/certbot_apache/_internal/configurator.py", line 374, in prepare
+    raise errors.PluginError(
+certbot.errors.PluginError: Unable to create a lock file in /etc/apache2. Are you running Certbot with sufficient privileges to modify your Apache configuration?
+2021-04-10 09:47:20,196:DEBUG:certbot._internal.plugins.disco:No installation (PluginEntryPoint#nginx): Could not find a usable 'nginx' binary. Ensure nginx exists, the binary is executable, and your PATH is set correctly.
+Traceback (most recent call last):
+  File "/usr/local/Cellar/certbot/1.14.0/libexec/lib/python3.9/site-packages/certbot/_internal/plugins/disco.py", line 158, in prepare
+    self._initialized.prepare()  # type: ignore
+  File "/usr/local/Cellar/certbot/1.14.0/libexec/vendor/lib/python3.9/site-packages/certbot_nginx/_internal/configurator.py", line 188, in prepare
+    raise errors.NoInstallationError(
+certbot.errors.NoInstallationError: Could not find a usable 'nginx' binary. Ensure nginx exists, the binary is executable, and your PATH is set correctly.
+2021-04-10 09:47:20,197:DEBUG:certbot._internal.plugins.selection:Multiple candidate plugins: * standalone
+Description: Spin up a temporary webserver
+Interfaces: IAuthenticator, IPlugin
+Entry point: standalone = certbot._internal.plugins.standalone:Authenticator
+Initialized: <certbot._internal.plugins.standalone.Authenticator object at 0x10dcaf970>
+Prep: True
+
+* webroot
+Description: Place files in webroot directory
+Interfaces: IAuthenticator, IPlugin
+Entry point: webroot = certbot._internal.plugins.webroot:Authenticator
+Initialized: <certbot._internal.plugins.webroot.Authenticator object at 0x10dcafa30>
+Prep: True
+2021-04-10 09:48:42,928:DEBUG:certbot._internal.plugins.selection:Selected authenticator None and installer None
+2021-04-10 09:48:42,936:INFO:certbot._internal.main:Could not choose appropriate plugin: authenticator could not be determined or is not installed
+2021-04-10 09:48:42,942:DEBUG:certbot._internal.log:Exiting abnormally:
+Traceback (most recent call last):
+  File "/usr/local/Cellar/certbot/1.14.0/libexec/bin/certbot", line 33, in <module>
+    sys.exit(load_entry_point('certbot==1.14.0', 'console_scripts', 'certbot')())
+  File "/usr/local/Cellar/certbot/1.14.0/libexec/lib/python3.9/site-packages/certbot/main.py", line 15, in main
+    return internal_main.main(cli_args)
+  File "/usr/local/Cellar/certbot/1.14.0/libexec/lib/python3.9/site-packages/certbot/_internal/main.py", line 1435, in main
+    return config.func(config, plugins)
+  File "/usr/local/Cellar/certbot/1.14.0/libexec/lib/python3.9/site-packages/certbot/_internal/main.py", line 1282, in certonly
+    installer, auth = plug_sel.choose_configurator_plugins(config, plugins, "certonly")
+  File "/usr/local/Cellar/certbot/1.14.0/libexec/lib/python3.9/site-packages/certbot/_internal/plugins/selection.py", line 224, in choose_configurator_plugins
+    diagnose_configurator_problem("authenticator", req_auth, plugins)
+  File "/usr/local/Cellar/certbot/1.14.0/libexec/lib/python3.9/site-packages/certbot/_internal/plugins/selection.py", line 328, in diagnose_configurator_problem
+    raise errors.PluginSelectionError(msg)
+certbot.errors.PluginSelectionError: authenticator could not be determined or is not installed
+2021-04-10 09:48:42,945:ERROR:certbot._internal.log:authenticator could not be determined or is not installed

@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import viewsets, permissions, response, pagination
 from rest_framework.permissions import AllowAny
-from core.serializers import UserSerializer, AccountSerializer, ALLPostSerializer, GooglePlaceSerializer, PostSerializer, ProfileSerializer
+from core.serializers import UserSerializer, AccountSerializer, ALLPostSerializer, GooglePlaceSerializer, PostSerializer, ProfileSerializer, CategoriesSerializer
 from core.models import Account, ALLPost, GooglePlace, Post, Profile
 from django.db.models import Q
 from rest_framework.decorators import action
@@ -84,10 +84,6 @@ class FeedViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user_id = self.request.query_params.get('user_id')
-        #filtering with user_id
-        if user_id is not None:
-            queryset = self.queryset.filter(user_id=user_id)
-            return queryset
         #filtering with user_ids filter
         user_ids = self.request.query_params.get('user_ids')
         if user_ids is not None:
@@ -104,7 +100,11 @@ class FeedViewSet(viewsets.ModelViewSet):
              return queryset
         categories = self.request.query_params.get('categories')
         if categories is not None:
-            queryset = self.queryset.filter(categories=categories)
+            categories = categories.split(',')
+            print(categories)
+            queryset = self.queryset.filter(
+                categories__in = categories
+            )
             return queryset
         queryset = self.queryset.filter(Q(user=self.request.user) | Q(user__in=self.request.user.profile.friends.all()))
         return queryset
@@ -145,6 +145,23 @@ class FollowersViewSet(viewsets.ModelViewSet):
         followers_count = self.queryset.filter(friends__in=[request.user]).count()
         body = {'count': followers_count}
         return response.Response(body)
+
+class CategoriesViewSet(viewsets.ModelViewSet):
+    queryset = Post.objects.values('categories').distinct()
+    serializer_class = CategoriesSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        categories = self.request.query_params.get('categories')
+        if categories is not None:
+            categories = categories.split(',')
+            print(categories)
+            queryset = self.queryset.filter(
+                categories__in = categories
+            )
+            return queryset
+        queryset = self.queryset.all()
+        return queryset
 
 
 
