@@ -28,9 +28,9 @@ class LineWebHookView(views.APIView):
             line_bot_api = LineBotApi(line_token.value)
             user_id = request.data['events'][0]['source']['userId']
             text = request.data['events'][0]['message']['text']
+            domain_url = os.environ.get('DOMAIN_URL', 'http://localhost:8080')
             try:
                 request_id = int(text.split('=')[-1])
-                domain_url = os.environ.get('DOMAIN_URL', 'http://localhost:8080')
                 #send push messages
                 line_bot_api.push_message(user_id, TextSendMessage(text=domain_url + '/login/?user_id=' + user_id + '&account_id=' + str(request_id)))
             except:
