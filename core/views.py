@@ -34,6 +34,7 @@ class LineWebHookView(views.APIView):
                 #send push messages
                 line_bot_api.push_message(user_id, TextSendMessage(text=domain_url + '/login/?user_id=' + user_id + '&account_id=' + str(request_id)))
             except:
+                line_bot_api.push_message(user_id, TextSendMessage(text='Go to this url to sign up!'))
                 line_bot_api.push_message(user_id, TextSendMessage(text=domain_url + '/login/?user_id=' + user_id))
         except Exception as e:
             print(e)
