@@ -39,16 +39,3 @@ class LineWebHookView(views.APIView):
         except Exception as e:
             print(e)
         return response.Response({'status': 'Ok'})
-
-
-
-
-
-
-
-
-
-
-
-
-        

@@ -71,7 +71,7 @@ def download_fb_post_2(post_url, user_id):
         fb_permalink = post_url['permalink_url']
         location_name = post_url['place']['name']
         try:
-            message = post_url['place']['message']
+            message = post_url['message']
         except:
             message = ''
         latitude = post_url['place']['location']['latitude']
@@ -216,6 +216,7 @@ def download_ig_post_2(ig_profile, user_id):
     try:
         media_url = ig_profile['media_url']
         ig_permalink = ig_profile['permalink']
+        message = ig_profile['caption']
         res = requests.get(ig_permalink, headers={'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 11_2_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.192 Safari/537.36'})
         bs = BeautifulSoup(res.text, 'html.parser')
         scripts = bs.find_all('script', {'type': 'text/javascript'})
@@ -287,6 +288,7 @@ def download_ig_post_2(ig_profile, user_id):
         post.google_place = google_place
         post.ig_id = json_string
         post.permalink = ig_permalink
+        post.message = message
         post.save()
         imagepost = PostImage()
         imagepost.url = media_url

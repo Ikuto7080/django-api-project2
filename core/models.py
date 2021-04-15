@@ -82,6 +82,7 @@ class PostImage(models.Model):
     image = models.ImageField(null=True, blank=1000, upload_to='postimage/')
 
 
+
 class ApiSetting(models.Model):
     name = models.CharField(max_length=100, blank=True)
     value = models.CharField(max_length=1000, blank=True)
