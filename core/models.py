@@ -21,7 +21,6 @@ class Profile(models.Model):
 
 class Account(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-
     fb_token = models.CharField(max_length=1000, null=True, blank=True)
     ig_token = models.CharField(max_length=1000, null=True, blank=True)
     fb_id = models.CharField(max_length=30, unique=True, null=True, blank=True)
