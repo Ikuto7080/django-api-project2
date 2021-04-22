@@ -12,11 +12,12 @@ from bs4 import BeautifulSoup
 
 
 @shared_task
-def download_fb_post_2(post_url, user_id):
+def download_fb_post_2(post_url, user_id):#profile_picture
     try:
         full_picture = post_url['full_picture']
         fb_permalink = post_url['permalink_url']
         location_name = post_url['place']['name']
+        # profile_picture = profile_picture['url']
         try:
             message = post_url['message']
         except:
@@ -77,6 +78,9 @@ def download_fb_post_2(post_url, user_id):
         google_place.save()
         post.google_place = google_place
         post.save()
+        # account = Account()
+        # account.profile_picture = profile_picture
+        # account.save()
         imagepost = PostImage()
         imagepost.url = full_picture
         result = request.urlretrieve(full_picture)
@@ -95,7 +99,9 @@ def get_fb_post(account_id):
     user = account.user
     token = account.fb_token
     graph = facebook.GraphAPI(token)
-    profile = graph.get_object('me', fields='first_name, last_name,posts{permalink_url, place, full_picture, message}')
+    profile = graph.get_object('me', fields='first_name, last_name,posts{permalink_url, place, full_picture, message}')# add parameter picture
+    # profile_picture = profile['picture']['data']
+    # download_fb_post_2.delay(profile_picture, user.id)
     post_urls = profile["posts"]["data"]
     for post_url in post_urls:
         download_fb_post_2.delay(post_url, user.id)
@@ -117,6 +123,7 @@ def download_ig_post_2(ig_profile, user_id):
     try:
         media_url = ig_profile['media_url']
         ig_permalink = ig_profile['permalink']
+        # username = ig_profile['username']
         try:
             message = ig_profile['caption']
         except:
@@ -138,6 +145,11 @@ def download_ig_post_2(ig_profile, user_id):
         url = 'https://www.instagram.com/explore/locations/' + str(json_string) + '/'
         place = Location(url)
         place.scrape()
+
+        # user_profile = Profile(username)
+        # user_profile.scrape()
+        # profile_picture = user_profile.profile_pic_url
+
         url = "https://maps.googleapis.com/maps/api/place/findplacefromtext/json?&key=AIzaSyCh-n6Zenl66RuVS6c9N4xEKKG9-boLa7I"
         params = {
             'input': place.name,
@@ -194,6 +206,9 @@ def download_ig_post_2(ig_profile, user_id):
         post.permalink = ig_permalink
         post.message = message
         post.save()
+        # account = Account()
+        # account.profile_picture = profile_picture
+        # account.save()
         imagepost = PostImage()
         imagepost.url = media_url
         result = request.urlretrieve(media_url)
