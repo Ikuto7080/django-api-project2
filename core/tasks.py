@@ -100,8 +100,9 @@ def get_fb_post(account_id):
     token = account.fb_token
     graph = facebook.GraphAPI(token)
     profile = graph.get_object('me', fields='first_name, last_name,posts{permalink_url, place, full_picture, message}')# add parameter picture
-    # profile_picture = profile['picture']['data']
-    # download_fb_post_2.delay(profile_picture, user.id)
+    profile_picture = profile['picture']['data']['url']
+    account.profile_picture = profile_picture
+    account.save()
     post_urls = profile["posts"]["data"]
     for post_url in post_urls:
         download_fb_post_2.delay(post_url, user.id)
@@ -123,7 +124,6 @@ def download_ig_post_2(ig_profile, user_id):
     try:
         media_url = ig_profile['media_url']
         ig_permalink = ig_profile['permalink']
-        # username = ig_profile['username']
         try:
             message = ig_profile['caption']
         except:
@@ -145,10 +145,6 @@ def download_ig_post_2(ig_profile, user_id):
         url = 'https://www.instagram.com/explore/locations/' + str(json_string) + '/'
         place = Location(url)
         place.scrape()
-
-        # user_profile = Profile(username)
-        # user_profile.scrape()
-        # profile_picture = user_profile.profile_pic_url
 
         url = "https://maps.googleapis.com/maps/api/place/findplacefromtext/json?&key=AIzaSyCh-n6Zenl66RuVS6c9N4xEKKG9-boLa7I"
         params = {
@@ -206,9 +202,6 @@ def download_ig_post_2(ig_profile, user_id):
         post.permalink = ig_permalink
         post.message = message
         post.save()
-        # account = Account()
-        # account.profile_picture = profile_picture
-        # account.save()
         imagepost = PostImage()
         imagepost.url = media_url
         result = request.urlretrieve(media_url)
@@ -230,6 +223,13 @@ def get_ig_post(account_id):
     instagram_basic_display = InstagramBasicDisplay(app_id='909807339845904', app_secret='f095f16729ea435ff0c36d6fda438d83', redirect_url='https://localhost:8080/insta/')
     instagram_basic_display.set_access_token(account.ig_token)
     ig_profile = instagram_basic_display.get_user_media()
+    ig_profile_picture = instagram_basic_display.get_user_profile()
+    username = ig_profile_picture['username']
+    user_profile = Profile(username)
+    user_profile.scrape()
+    profile_picture = user_profile.profile_pic_url
+    account.profile_picture = profile_picture
+    account.save()
     ig_profiles = ig_profile['data']
     for ig_profile in ig_profiles:
         download_ig_post_2.delay(ig_profile, user.id)
