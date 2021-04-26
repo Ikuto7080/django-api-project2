@@ -119,7 +119,7 @@ def get_fb_post(account_id):
 
 
 
-@shared_task
+@shared_task(rate_limit="1/s")
 def download_ig_post_2(ig_profile, user_id):
     try:
         media_url = ig_profile['media_url']
