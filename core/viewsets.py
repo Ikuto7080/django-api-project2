@@ -147,7 +147,7 @@ class FollowersViewSet(viewsets.ModelViewSet):
         return response.Response(body)
 
 class CategoriesViewSet(viewsets.ModelViewSet):
-    queryset = Post.objects.values('categories').distinct()
+    queryset = Post.objects
     serializer_class = CategoriesSerializer
     permission_classes = [permissions.IsAuthenticated]
 
@@ -160,8 +160,9 @@ class CategoriesViewSet(viewsets.ModelViewSet):
                 categories__in = categories
             )
             return queryset
-        queryset = self.queryset.all()
-        return queryset
+        queryset = self.queryset.filter(Q(user=self.request.user) | Q(user__in=self.request.user.profile.friends.all()))
+        # queryset = self.queryset.all()
+        return queryset.values('categories').distinct()
 
 
 

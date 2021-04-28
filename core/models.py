@@ -57,6 +57,7 @@ class GooglePlace(models.Model):
     place_id = models.CharField(max_length=1000)
     latitude = models.FloatField()
     longitude = models.FloatField()
+    hidden = models.BooleanField(default=False)
     def __str__(self):
         return self.info['name'] if self.info else self.place_id
         
