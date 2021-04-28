@@ -99,7 +99,7 @@ def get_fb_post(account_id):
     user = account.user
     token = account.fb_token
     graph = facebook.GraphAPI(token)
-    profile = graph.get_object('me', fields='first_name, last_name,posts{permalink_url, place, full_picture, message}')# add parameter picture
+    profile = graph.get_object('me', fields='first_name, last_name, picture, posts{permalink_url, place, full_picture, message}')# add parameter picture
     profile_picture = profile['picture']['data']['url']
     account.profile_picture = profile_picture
     account.save()

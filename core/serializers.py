@@ -24,8 +24,8 @@ class AccountSerializer(serializers.ModelSerializer):
     follow_line_id = serializers.CharField(required=False, write_only=True)
     class Meta:
         model = Account
-        fields = ['id', 'user', 'fb_token' , 'ig_token', 'fb_code', 'ig_code', 'fb_id', 'ig_id', 'redirect_uri', 'line_user_id', 'follow_line_id']
-        read_only_fields = ['user', 'fb_token', 'ig_token', 'fb_id', 'ig_id']
+        fields = ['id', 'user', 'fb_token' , 'ig_token', 'fb_code', 'ig_code', 'fb_id', 'ig_id', 'redirect_uri', 'line_user_id', 'follow_line_id', 'profile_picture']
+        read_only_fields = ['user', 'fb_token', 'ig_token', 'fb_id', 'ig_id', 'profile_picture']
 
     def create(self, validated_data):
           fb_code = validated_data.get("fb_code")
