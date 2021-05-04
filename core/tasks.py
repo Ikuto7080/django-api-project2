@@ -54,6 +54,21 @@ def download_fb_post_2(post_url, user_id):#profile_picture
         post.message = message
         post.type = "facebook"
         post.user_id = user_id
+        google_place = GooglePlace.objects.filter(place_id=place_id).first()
+        if not google_place:
+            google_place = GooglePlace(place_id=place_id, latitude=latitude, longitude=longitude)
+        google_place.info = google_info
+        google_place.save()
+        post.google_place = google_place
+        post.save()
+        imagepost = PostImage()
+        imagepost.url = full_picture
+        result = request.urlretrieve(full_picture)
+        f = open(result[0], 'rb')
+        fb_file = File(f)
+        imagepost.post = post
+        imagepost.image.save(str(uuid.uuid4()), fb_file)
+        imagepost.save()
     # foursquare for categories
         url = 'https://api.foursquare.com/v2/venues/search'
         query_name = form['result']['name']
@@ -67,31 +82,16 @@ def download_fb_post_2(post_url, user_id):#profile_picture
         )
         resp = requests.get(url=url, params=params)
         form = resp.json()
-        category_form = form['response']['venues'][0]['categories'][0]['name']
-        post.categories = category_form
-        print(category_form)
-
-        google_place = GooglePlace.objects.filter(place_id=place_id).first()
-        if not google_place:
-            google_place = GooglePlace(place_id=place_id, latitude=latitude, longitude=longitude)
-        google_place.info = google_info
-        google_place.save()
-        post.google_place = google_place
-        post.save()
-        # account = Account()
-        # account.profile_picture = profile_picture
-        # account.save()
-        imagepost = PostImage()
-        imagepost.url = full_picture
-        result = request.urlretrieve(full_picture)
-        f = open(result[0], 'rb')
-        fb_file = File(f)
-        imagepost.post = post
-        imagepost.image.save(str(uuid.uuid4()), fb_file)
-        imagepost.save()
-        print(post.id)
+        category_form = form['response']['venues']
+        if len(category_form) > 0:
+            post.categories = category_form[0]['categories'][0]['name']
+            post.save()
+        else:
+            post.categories = 'Uncategorized'
+            post.save()
     except Exception as e:
         print(e)
+        raise e
 
 @shared_task
 def get_fb_post(account_id):
