@@ -105,7 +105,13 @@ class FeedViewSet(viewsets.ModelViewSet):
             queryset = self.queryset.filter(
                 categories__in = categories
             )
+            print(categories)
             return queryset
+        price_level = self.request.query_params.get("price_level")
+        if price_level is not None:
+            queryset = self.queryset.filter(google_place__info__contains_by={'price_level':price_level})
+            return queryset
+        # if 
         queryset = self.queryset.filter(Q(user=self.request.user) | Q(user__in=self.request.user.profile.friends.all()))
         return queryset
 

@@ -9,6 +9,7 @@ from urllib import request
 import uuid
 from django.core.files import File
 from bs4 import BeautifulSoup
+import reverse_geocode
 
 
 @shared_task
@@ -37,7 +38,7 @@ def download_fb_post_2(post_url, user_id):#profile_picture
         detail_url = "https://maps.googleapis.com/maps/api/place/details/json?key=AIzaSyCh-n6Zenl66RuVS6c9N4xEKKG9-boLa7I"
         params = {
             'place_id': place_id,
-            'fields': 'name,types,rating,formatted_phone_number,url,website,formatted_address,opening_hours,reviews'
+            'fields': 'name,types,rating,formatted_phone_number,url,website,formatted_address,opening_hours,reviews,price_level'
         }
         r = requests.get(detail_url, params=params)
         form = r.json()
@@ -58,6 +59,11 @@ def download_fb_post_2(post_url, user_id):#profile_picture
         if not google_place:
             google_place = GooglePlace(place_id=place_id, latitude=latitude, longitude=longitude)
         google_place.info = google_info
+        coodinates = (google_place.latitude, google_place.longitude), (google_place.latitude, google_place.longitude)
+        city_place = reverse_geocode.search(coodinates)
+        city_place = city_place[0]['city']
+        print(cicty_place)
+        google_place.city_place = city_place
         google_place.save()
         post.google_place = google_place
         post.save()

@@ -55,12 +55,13 @@ class ALLPost(models.Model):
 class GooglePlace(models.Model):
     info = models.JSONField(null=True, blank=True)
     place_id = models.CharField(max_length=1000)
+    city_place = models.CharField(max_length=50)
     latitude = models.FloatField()
     longitude = models.FloatField()
     hidden = models.BooleanField(default=False)
     def __str__(self):
         return self.info['name'] if self.info else self.place_id
-        
+
 
 
 class IgLocation(models.Model):

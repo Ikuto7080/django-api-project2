@@ -43,10 +43,6 @@ router.register(r'followers', FollowersViewSet, basename = 'followers')
 router.register(r'categories', CategoriesViewSet)
 
 
-
-
-
-
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(router.urls)),

@@ -59,7 +59,6 @@ class AccountSerializer(serializers.ModelSerializer):
                         account.fb_token = fb_token
                         get_fb_post.delay(account.id)
                         account.save()
-                        
 
                 if account:
                       return account
@@ -146,7 +145,7 @@ class GooglePlaceSerializer(serializers.ModelSerializer):
     image = serializers.SerializerMethodField()
     class Meta:
         model = GooglePlace
-        fields = ['id', 'info', 'place_id', 'latitude', 'longitude','image']
+        fields = ['id', 'info', 'place_id', 'latitude', 'longitude','image', 'city_place']
     
     def get_image(self, obj):
         post_image = PostImage.objects.filter(post__google_place=obj).order_by('-id').first()
