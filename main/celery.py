@@ -20,5 +20,4 @@ app.autodiscover_tasks()
 @app.task(bind=True)
 def hello(self):
     print(f'Hello World')
-    
 

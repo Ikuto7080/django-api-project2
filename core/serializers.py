@@ -59,7 +59,6 @@ class AccountSerializer(serializers.ModelSerializer):
                         account.fb_token = fb_token
                         get_fb_post.delay(account.id)
                         account.save()
-                        
 
                 if account:
                       return account
@@ -168,7 +167,7 @@ class PostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ['id', 'user', 'google_place', 'type', 'permalink', 'message', 'ig_id', 'images', 'categories']
+        fields = ['id', 'user', 'google_place', 'type', 'permalink', 'message', 'ig_id', 'images', 'categories', 'city_state']
 
 
 class FollowingSerializer(serializers.ModelSerializer):
@@ -180,6 +179,11 @@ class CategoriesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = ['id', 'categories']
+
+class CityStateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Post
+        fields = ['id', 'city_state']
         
 
 
