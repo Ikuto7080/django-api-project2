@@ -88,7 +88,8 @@ def download_fb_post_2(post_url, user_id):#profile_picture
         v='20210403',
         ll=str(lat) + ',' + str(lon),
         query=query_name,
-        limit=1
+        limit=1,
+        locale='en'
         )
         resp = requests.get(url=url, params=params)
         form = resp.json()
