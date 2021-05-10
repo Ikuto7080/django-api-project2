@@ -9,6 +9,9 @@ from urllib import request
 import uuid
 from django.core.files import File
 from bs4 import BeautifulSoup
+from math import radians, cos, sin, asin, sqrt
+import numpy as np
+
 
 
 @shared_task
@@ -37,7 +40,7 @@ def download_fb_post_2(post_url, user_id):#profile_picture
         detail_url = "https://maps.googleapis.com/maps/api/place/details/json?key=AIzaSyCh-n6Zenl66RuVS6c9N4xEKKG9-boLa7I"
         params = {
             'place_id': place_id,
-            'fields': 'name,types,rating,formatted_phone_number,url,website,formatted_address,opening_hours,reviews'
+            'fields': 'name,types,rating,formatted_phone_number,url,website,formatted_address,opening_hours,reviews,address_components,geometry'
         }
         r = requests.get(detail_url, params=params)
         form = r.json()
@@ -56,7 +59,7 @@ def download_fb_post_2(post_url, user_id):#profile_picture
         post.user_id = user_id
         google_place = GooglePlace.objects.filter(place_id=place_id).first()
         if not google_place:
-            google_place = GooglePlace(place_id=place_id, latitude=latitude, longitude=longitude)
+            google_place = GooglePlace(place_id=place_id, latitude=google_info['geometry']['location']['lat'], longitude=google_info['geometry']['location']['lng'])
         google_place.info = google_info
         google_place.save()
         post.google_place = google_place
@@ -72,11 +75,13 @@ def download_fb_post_2(post_url, user_id):#profile_picture
     # foursquare for categories
         url = 'https://api.foursquare.com/v2/venues/search'
         query_name = form['result']['name']
+        lat = google_info['geometry']['location']['lat']
+        lon = google_info['geometry']['location']['lng']
         params = dict(
         client_id='2FMOM2DV2E2R5E4L5D1QFL4NS4MWC3VJU4C3YU5KEAWRVM4T',
         client_secret='THUSQ3S42S4KNIPROQEPP5VAWGBA2KXCYHSOUNJ4JZN1RGQY',
         v='20210403',
-        ll=str(latitude) + ',' + str(longitude),
+        ll=str(lat) + ',' + str(lon),
         query=query_name,
         limit=1
         )
