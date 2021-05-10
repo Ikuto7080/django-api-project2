@@ -145,7 +145,7 @@ class GooglePlaceSerializer(serializers.ModelSerializer):
     image = serializers.SerializerMethodField()
     class Meta:
         model = GooglePlace
-        fields = ['id', 'info', 'place_id', 'latitude', 'longitude','image', 'city_place']
+        fields = ['id', 'info', 'place_id', 'latitude', 'longitude','image']
     
     def get_image(self, obj):
         post_image = PostImage.objects.filter(post__google_place=obj).order_by('-id').first()
@@ -167,7 +167,7 @@ class PostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ['id', 'user', 'google_place', 'type', 'permalink', 'message', 'ig_id', 'images', 'categories']
+        fields = ['id', 'user', 'google_place', 'type', 'permalink', 'message', 'ig_id', 'images', 'categories', 'city_state']
 
 
 class FollowingSerializer(serializers.ModelSerializer):
@@ -179,6 +179,11 @@ class CategoriesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = ['id', 'categories']
+
+class CityStateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Post
+        fields = ['id', 'city_state']
         
 
 

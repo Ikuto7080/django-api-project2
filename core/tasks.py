@@ -9,14 +9,18 @@ from urllib import request
 import uuid
 from django.core.files import File
 from bs4 import BeautifulSoup
-import reverse_geocode
 
 
 @shared_task
 def download_fb_post_2(post_url, user_id):#profile_picture
     try:
-        full_picture = post_url['full_picture']
+        full_picture = post_url.get('full_picture')
+        if not full_picture:
+            return []
         fb_permalink = post_url['permalink_url']
+        place = post_url.get('place')
+        if not place:
+            return []
         location_name = post_url['place']['name']
         # profile_picture = profile_picture['url']
         try:
@@ -59,11 +63,6 @@ def download_fb_post_2(post_url, user_id):#profile_picture
         if not google_place:
             google_place = GooglePlace(place_id=place_id, latitude=latitude, longitude=longitude)
         google_place.info = google_info
-        coodinates = (google_place.latitude, google_place.longitude), (google_place.latitude, google_place.longitude)
-        city_place = reverse_geocode.search(coodinates)
-        city_place = city_place[0]['city']
-        print(cicty_place)
-        google_place.city_place = city_place
         google_place.save()
         post.google_place = google_place
         post.save()
@@ -88,6 +87,11 @@ def download_fb_post_2(post_url, user_id):#profile_picture
         )
         resp = requests.get(url=url, params=params)
         form = resp.json()
+        try:
+            city_place = form['response']['venues'][0]['location']['state']
+            post.city_state = city_place
+        except:
+            post.city_state = ''
         category_form = form['response']['venues']
         if len(category_form) > 0:
             post.categories = category_form[0]['categories'][0]['name']
@@ -113,8 +117,11 @@ def get_fb_post(account_id):
     for post_url in post_urls:
         download_fb_post_2.delay(post_url, user.id)
     page = profile['posts']
+    page = page.get('paging')
+    if not page:
+        return []
     while True:
-        next_url = page['paging'].get('next')
+        next_url = page.get('next')
         if not next_url:
             break
         r = requests.get(next_url)

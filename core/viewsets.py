@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import viewsets, permissions, response, pagination
 from rest_framework.permissions import AllowAny
-from core.serializers import UserSerializer, AccountSerializer, ALLPostSerializer, GooglePlaceSerializer, PostSerializer, ProfileSerializer, CategoriesSerializer
+from core.serializers import UserSerializer, AccountSerializer, ALLPostSerializer, GooglePlaceSerializer, PostSerializer, ProfileSerializer, CategoriesSerializer, CityStateSerializer
 from core.models import Account, ALLPost, GooglePlace, Post, Profile
 from django.db.models import Q
 from rest_framework.decorators import action
@@ -105,13 +105,18 @@ class FeedViewSet(viewsets.ModelViewSet):
             queryset = self.queryset.filter(
                 categories__in = categories
             )
-            print(categories)
             return queryset
         price_level = self.request.query_params.get("price_level")
         if price_level is not None:
             queryset = self.queryset.filter(google_place__info__contains_by={'price_level':price_level})
             return queryset
-        # if 
+        city_state = self.request.query_params.get('city_state')
+        if city_state is not None:
+            city_state = city_state.split(',')
+            queryset = self.queryset.filter(
+                city_state__in = city_state
+            )
+            return queryset
         queryset = self.queryset.filter(Q(user=self.request.user) | Q(user__in=self.request.user.profile.friends.all()))
         return queryset
 
@@ -169,6 +174,23 @@ class CategoriesViewSet(viewsets.ModelViewSet):
         queryset = self.queryset.filter(Q(user=self.request.user) | Q(user__in=self.request.user.profile.friends.all()))
         # queryset = self.queryset.all()
         return queryset.values('categories').distinct()
+
+
+class CityStateViewSet(viewsets.ModelViewSet):
+    queryset = Post.objects
+    serializer_class = CityStateSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        city_state = self.request.query_params.get('city_state')
+        if city_state is not None:
+            city_state = city_state.split(',')
+            queryset = self.queryset.filter(
+                city_state__in = city_state
+            )
+            return queryset
+        queryset = self.queryset.filter(Q(user=self.request.user) | Q(user__in=self.request.user.profile.friends.all()))
+        return queryset.values('city_state').distinct()
 
 
 

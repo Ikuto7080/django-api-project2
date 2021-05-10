@@ -22,7 +22,7 @@ from django.conf.urls.static import static
 
 
 from rest_framework import routers
-from core.viewsets import UserViewSet, AccountViewSet, ALLPostViewSet, GooglePlaceViewSet, PostViewSet, ProfileViewSet, FeedViewSet, FollowingsViewSet, FollowersViewSet, CategoriesViewSet
+from core.viewsets import UserViewSet, AccountViewSet, ALLPostViewSet, GooglePlaceViewSet, PostViewSet, ProfileViewSet, FeedViewSet, FollowingsViewSet, FollowersViewSet, CategoriesViewSet, CityStateViewSet
 
 from core.filters import ProfileList
 from core.views import LineWebHookView
@@ -41,6 +41,8 @@ router.register(r'feeds', FeedViewSet, basename='feeds')
 router.register(r'followings', FollowingsViewSet, basename='followings')
 router.register(r'followers', FollowersViewSet, basename = 'followers')
 router.register(r'categories', CategoriesViewSet)
+router.register(r'citystates', CityStateViewSet)
+
 
 
 urlpatterns = [

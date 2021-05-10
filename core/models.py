@@ -55,7 +55,6 @@ class ALLPost(models.Model):
 class GooglePlace(models.Model):
     info = models.JSONField(null=True, blank=True)
     place_id = models.CharField(max_length=1000)
-    city_place = models.CharField(max_length=50)
     latitude = models.FloatField()
     longitude = models.FloatField()
     hidden = models.BooleanField(default=False)
@@ -76,6 +75,7 @@ class Post(models.Model):
     message = models.CharField(max_length=1000, null=True, blank=True)
     ig_id = models.CharField(max_length=1000, blank=True)
     categories = models.CharField(max_length=100, null=True, blank=True)
+    city_state = models.CharField(max_length=1000, blank=True)
 
 
 class PostImage(models.Model):
