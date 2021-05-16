@@ -79,7 +79,6 @@ def download_fb_post_2(post_url, user_id):#profile_picture
         imagepost.save()
     # foursquare for categories
         url = 'https://api.foursquare.com/v2/venues/search'
-        query_name = form['result']['name']
         lat = google_info['geometry']['location']['lat']
         lon = google_info['geometry']['location']['lng']
         name = google_info['name']
@@ -90,7 +89,7 @@ def download_fb_post_2(post_url, user_id):#profile_picture
             params = dict(
             client_id='2FMOM2DV2E2R5E4L5D1QFL4NS4MWC3VJU4C3YU5KEAWRVM4T',
             client_secret='THUSQ3S42S4KNIPROQEPP5VAWGBA2KXCYHSOUNJ4JZN1RGQY',
-            v='20210403',
+            v='20210516',
             ll=str(lat) + ',' + str(lon),
             query=split_name,
             locale='en'
