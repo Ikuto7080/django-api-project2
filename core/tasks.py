@@ -122,19 +122,19 @@ def get_fb_post(account_id):
     post_urls = profile["posts"]["data"]
     for post_url in post_urls:
         download_fb_post_2.delay(post_url, user.id)
-    page = profile['posts']
-    page = page.get('paging')
-    if not page:
-        return []
-    while True:
-        next_url = page.get('next')
-        if not next_url:
-            break
-        r = requests.get(next_url)
-        page = r.json()
-        post_urls = page["data"]
-        for post_url in post_urls:
-            download_fb_post_2.delay(post_url, user.id)
+    # page = profile['posts']
+    # page = page.get('paging')
+    # if not page:
+    #     return []
+    # while True:
+    #     next_url = page.get('next')
+    #     if not next_url:
+    #         break
+    #     r = requests.get(next_url)
+    #     page = r.json()
+    #     post_urls = page["data"]
+    #     for post_url in post_urls:
+    #         download_fb_post_2.delay(post_url, user.id)
 
 
 
