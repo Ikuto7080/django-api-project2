@@ -114,7 +114,7 @@ class FeedViewSet(viewsets.ModelViewSet):
         if city_state is not None:
             city_state = city_state.split(',')
             queryset = self.queryset.filter(
-                city_state__in = city_state
+                city__in = city_state
             )
             return queryset
         queryset = self.queryset.filter(Q(user=self.request.user) | Q(user__in=self.request.user.profile.friends.all()))
@@ -186,11 +186,11 @@ class CityStateViewSet(viewsets.ModelViewSet):
         if city_state is not None:
             city_state = city_state.split(',')
             queryset = self.queryset.filter(
-                city_state__in = city_state
+                city__in = city_state
             )
             return queryset
         queryset = self.queryset.filter(Q(user=self.request.user) | Q(user__in=self.request.user.profile.friends.all()))
-        return queryset.values('city_state').distinct()
+        return queryset.values('city', 'state').distinct()
 
 
 

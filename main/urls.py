@@ -35,13 +35,13 @@ router.register(r'users', UserViewSet)
 router.register(r'accounts', AccountViewSet)
 router.register(r'allposts', ALLPostViewSet)
 router.register(r'restaurants', GooglePlaceViewSet)
-router.register(r'posts', PostViewSet)
+router.register(r'posts', PostViewSet, basename='posts')
 router.register(r'profiles', ProfileViewSet)
 router.register(r'feeds', FeedViewSet, basename='feeds')
 router.register(r'followings', FollowingsViewSet, basename='followings')
 router.register(r'followers', FollowersViewSet, basename = 'followers')
 router.register(r'categories', CategoriesViewSet)
-router.register(r'citystates', CityStateViewSet)
+router.register(r'citystates', CityStateViewSet, basename='citystates')
 
 
 

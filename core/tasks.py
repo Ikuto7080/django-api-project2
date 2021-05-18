@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from instascrape import *
 from celery import shared_task
-from core.models import Account, ALLPost, Post, GooglePlace, IgLocation, PostImage
+from core.models import Account, ALLPost, Post, GooglePlace, IgLocation, PostImage, FoursquareVenue
 from instagram_basic_display.InstagramBasicDisplay import InstagramBasicDisplay
 import requests
 import facebook
@@ -85,6 +85,7 @@ def download_fb_post_2(post_url, user_id):#profile_picture
         split_names = name.split()
         mylist_distance = []
         mylist_category = []
+        matched_venue = None
         for split_name in split_names:
             params = dict(
             client_id='2FMOM2DV2E2R5E4L5D1QFL4NS4MWC3VJU4C3YU5KEAWRVM4T',
@@ -102,23 +103,26 @@ def download_fb_post_2(post_url, user_id):#profile_picture
             mylist_category.append(category_name)
             near_distance = min(mylist_distance)
             for i in mylist_category:
-               if near_distance is i['location']['distance']:
-                  for restaurants in i['categories']:
-                    restaurant_category = restaurants['name']  
-                    post.categories = restaurant_category
-                    post.save()
-        # try:
-        #     city_place = form['response']['venues'][0]['location']['state']
-        #     post.city_state = city_place
-        # except:
-        #     post.city_state = ''
-        # category_form = form['response']['venues']
-        # if len(category_form) > 0:
-        #     post.categories = category_form[0]['categories'][0]['name']
-        #     post.save()
-        # else:
-        #     post.categories = 'Uncategorized'
-        #     post.save()
+                if near_distance is i['location']['distance']:
+                    matched_venue = i
+                    for restaurants in i['categories']:
+                        restaurant_category = restaurants['name']  
+                        post.categories = restaurant_category
+        try:
+            state = matched_venue['location']['state']
+            city = matched_venue['location']['city']
+            venue_id = matched_venue['id']
+            foursquare_venue = FoursquareVenue.objects.filter(venue_id=venue_id).first()
+            if not foursquare_venue:
+                foursquare_venue = FoursquareVenue(venue_id=venue_id, data=matched_venue)
+                foursquare_venue.save()
+            post.foursquare = foursquare_venue
+            post.state = state
+            post.city = city
+        except:
+            post.city = ''
+            post.state = ''
+        post.save()
     except Exception as e:
         print(e)
         raise e

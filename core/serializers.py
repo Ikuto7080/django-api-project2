@@ -136,9 +136,10 @@ class ALLPostSerializer(serializers.ModelSerializer):
 class ProfileSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
     friends = UserSerializer(many=True)
+    profile_picture = serializers.CharField(source='user.account.profile_picture')
     class Meta:
         model = Profile
-        fields = ['id', 'user', 'friends']
+        fields = ['id', 'user', 'friends', 'profile_picture']
         
 
 class GooglePlaceSerializer(serializers.ModelSerializer):
@@ -167,7 +168,7 @@ class PostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ['id', 'user', 'google_place', 'type', 'permalink', 'message', 'ig_id', 'images', 'categories', 'city_state']
+        fields = ['id', 'user', 'google_place', 'type', 'permalink', 'message', 'ig_id', 'images', 'categories', 'city', 'state']
 
 
 class FollowingSerializer(serializers.ModelSerializer):
@@ -183,7 +184,7 @@ class CategoriesSerializer(serializers.ModelSerializer):
 class CityStateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
-        fields = ['id', 'city_state']
+        fields = ['id', 'city', 'state']
         
 
 
