@@ -171,7 +171,7 @@ class CategoriesViewSet(viewsets.ModelViewSet):
                 categories__in = categories
             )
             return queryset
-        queryset = self.queryset.filter(Q(user=self.request.user) | Q(user__in=self.request.user.profile.friends.all()))
+        queryset = self.queryset.filter(Q(user=self.request.user) | Q(user__in=self.request.user.profile.friends.all())).exclude(categories__isnull = True)
         # queryset = self.queryset.all()
         return queryset.values('categories').distinct()
 

@@ -10,9 +10,10 @@ from core.tasks import get_ig_post, get_fb_post
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
+    profile_picture = serializers.CharField(source='account.profile_picture')
     class Meta:
         model = User
-        fields = ['id', 'url', 'first_name', 'last_name', 'email', 'is_staff']
+        fields = ['id', 'url', 'first_name', 'last_name', 'email', 'is_staff', 'profile_picture']
 
 
 
@@ -185,8 +186,6 @@ class CityStateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = ['id', 'city', 'state']
-        
-
 
 
 

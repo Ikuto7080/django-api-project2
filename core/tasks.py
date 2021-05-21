@@ -145,14 +145,18 @@ def get_fb_post(account_id):
     if not page:
         return []
     while True:
+        if not page:
+            break
         next_url = page.get('next')
         if not next_url:
             break
         r = requests.get(next_url)
         page = r.json()
         post_urls = page["data"]
+        page = page.get('paging')
         for post_url in post_urls:
             download_fb_post_2.delay(post_url, user.id)
+            print('paging correct')
 
 
 
