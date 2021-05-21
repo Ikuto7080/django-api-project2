@@ -1,1 +1,1 @@
-list=['zoo', 'ocean', 'sea', 'apple', 'orange', 'air']s
+list=['zoo', 'ocean', 'sea', 'apple', 'orange', 'air']

@@ -108,6 +108,10 @@ def download_fb_post_2(post_url, user_id):#profile_picture
                     for restaurants in i['categories']:
                         restaurant_category = restaurants['name']  
                         post.categories = restaurant_category
+                elif near_distance >= 5000:
+                    restaurant_category = "Uncategories"
+                    post.categories = restaurant_category
+
         try:
             state = matched_venue['location']['state']
             city = matched_venue['location']['city']
