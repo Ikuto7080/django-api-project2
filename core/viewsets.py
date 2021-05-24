@@ -83,41 +83,41 @@ class FeedViewSet(viewsets.ModelViewSet):
 
 
     def get_queryset(self):
+        queryset = self.queryset
         user_id = self.request.query_params.get('user_id')
         #filtering with user_ids filter
         user_ids = self.request.query_params.get('user_ids')
         if user_ids is not None:
             user_id = user_ids.split(',')
-            queryset = self.queryset.filter(
+            queryset = queryset.filter(
                 #__inのあとはリスト型じゃないといけない
                 user_id__in=user_id
                 )
-            return queryset
         google_place = self.request.query_params.get('google_place')
         #filtering with google_place filter
         if google_place is not None:
-             queryset = self.queryset.filter(google_place=google_place)
-             return queryset
+             queryset = queryset.filter(google_place=google_place)
+
         categories = self.request.query_params.get('categories')
         if categories is not None:
             categories = categories.split(',')
             print(categories)
-            queryset = self.queryset.filter(
+            queryset = queryset.filter(
                 categories__in = categories
             )
-            return queryset
+            
         price_level = self.request.query_params.get("price_level")
         if price_level is not None:
-            queryset = self.queryset.filter(google_place__info__contains_by={'price_level':price_level})
-            return queryset
+            queryset = queryset.filter(google_place__info__contains_by={'price_level':price_level})
+
         city_state = self.request.query_params.get('city_state')
         if city_state is not None:
             city_state = city_state.split(',')
-            queryset = self.queryset.filter(
+            queryset = queryset.filter(
                 city__in = city_state
             )
-            return queryset
-        queryset = self.queryset.filter(Q(user=self.request.user) | Q(user__in=self.request.user.profile.friends.all()))
+
+        queryset = queryset.filter(Q(user=self.request.user) | Q(user__in=self.request.user.profile.friends.all()))
         return queryset
 
 
