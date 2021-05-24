@@ -84,10 +84,9 @@ class FeedViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         queryset = self.queryset
-        user_id = self.request.query_params.get('user_id')
         #filtering with user_ids filter
         user_ids = self.request.query_params.get('user_ids')
-        if user_ids is not None:
+        if user_ids:
             user_id = user_ids.split(',')
             queryset = queryset.filter(
                 #__inのあとはリスト型じゃないといけない
@@ -95,11 +94,11 @@ class FeedViewSet(viewsets.ModelViewSet):
                 )
         google_place = self.request.query_params.get('google_place')
         #filtering with google_place filter
-        if google_place is not None:
+        if google_place:
              queryset = queryset.filter(google_place=google_place)
 
         categories = self.request.query_params.get('categories')
-        if categories is not None:
+        if categories:
             categories = categories.split(',')
             print(categories)
             queryset = queryset.filter(
@@ -107,11 +106,11 @@ class FeedViewSet(viewsets.ModelViewSet):
             )
             
         price_level = self.request.query_params.get("price_level")
-        if price_level is not None:
+        if price_level:
             queryset = queryset.filter(google_place__info__contains_by={'price_level':price_level})
 
         city_state = self.request.query_params.get('city_state')
-        if city_state is not None:
+        if city_state:
             city_state = city_state.split(',')
             queryset = queryset.filter(
                 city__in = city_state
