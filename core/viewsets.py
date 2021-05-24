@@ -163,15 +163,28 @@ class CategoriesViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
+        queryset = self.queryset
         categories = self.request.query_params.get('categories')
         if categories is not None:
             categories = categories.split(',')
             print(categories)
-            queryset = self.queryset.filter(
+            queryset = queryset.filter(
                 categories__in = categories
             )
             return queryset
-        queryset = self.queryset.filter(Q(user=self.request.user) | Q(user__in=self.request.user.profile.friends.all())).exclude(categories__isnull = True)
+
+
+        queryset = queryset.filter(Q(user=self.request.user) | Q(user__in=self.request.user.profile.friends.all())).exclude(categories__isnull = True)
+        #filtering with user_ids filter
+        user_ids = self.request.query_params.get('user_ids')
+        if user_ids is not None:
+            user_id = user_ids.split(',')
+            print(user_id)
+            queryset = queryset.filter(
+                #__inのあとはリスト型じゃないといけない
+                user_id__in=user_id
+                )
+
         # queryset = self.queryset.all()
         return queryset.values('categories').distinct()
 
@@ -189,7 +202,7 @@ class CityStateViewSet(viewsets.ModelViewSet):
                 city__in = city_state
             )
             return queryset
-        queryset = self.queryset.filter(Q(user=self.request.user) | Q(user__in=self.request.user.profile.friends.all()))
+        queryset = self.queryset.filter(Q(user=self.request.user) | Q(user__in=self.request.user.profile.friends.all())).exclude(state__isnull = True)
         return queryset.values('city', 'state').distinct()
 
 
