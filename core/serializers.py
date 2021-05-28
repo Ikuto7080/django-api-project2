@@ -180,7 +180,7 @@ class FollowingSerializer(serializers.ModelSerializer):
 class CategoriesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
-        fields = ['id', 'categories']
+        fields = ['categories']
 
 class CityStateSerializer(serializers.ModelSerializer):
     class Meta:

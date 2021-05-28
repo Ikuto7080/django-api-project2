@@ -166,13 +166,10 @@ class CategoriesViewSet(viewsets.ModelViewSet):
         categories = self.request.query_params.get('categories')
         if categories is not None:
             categories = categories.split(',')
-            print(categories)
             queryset = queryset.filter(
                 categories__in = categories
             )
             return queryset
-
-
         queryset = queryset.filter(Q(user=self.request.user) | Q(user__in=self.request.user.profile.friends.all())).exclude(categories__isnull = True)
         #filtering with user_ids filter
         user_ids = self.request.query_params.get('user_ids')
@@ -183,8 +180,12 @@ class CategoriesViewSet(viewsets.ModelViewSet):
                 #__inのあとはリスト型じゃないといけない
                 user_id__in=user_id
                 )
-
-        # queryset = self.queryset.all()
+        city_states = self.request.query_params.get('city_states')
+        if city_states:
+            city_state = city_states.split(',')
+            queryset = queryset.filter(
+                city__in = city_state
+            )
         return queryset.values('categories').distinct()
 
 
@@ -194,14 +195,28 @@ class CityStateViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        city_state = self.request.query_params.get('city_state')
-        if city_state is not None:
-            city_state = city_state.split(',')
-            queryset = self.queryset.filter(
+        queryset = self.queryset
+        city_states = self.request.query_params.get('city_states')
+        if city_states is not None:
+            city_state = city_states.split(',')
+            queryset = queryset.filter(
                 city__in = city_state
             )
             return queryset
-        queryset = self.queryset.filter(Q(user=self.request.user) | Q(user__in=self.request.user.profile.friends.all())).exclude(state__isnull = True)
+        queryset = queryset.filter(Q(user=self.request.user) | Q(user__in=self.request.user.profile.friends.all())).exclude(state__isnull = True).exclude(state__exact="")
+        user_ids = self.request.query_params.get('user_ids')
+        if user_ids:
+            user_id = user_ids.split(',')
+            print(user_id)
+            queryset = queryset.filter(
+                user_id__in=user_id
+            )
+        categories = self.request.query_params.get('categories')
+        if categories:
+            category = categories.split(',')
+            queryset = queryset.filter(
+                categories__in=category
+            )
         return queryset.values('city', 'state').distinct()
 
 
