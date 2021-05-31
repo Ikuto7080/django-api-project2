@@ -109,7 +109,7 @@ class FeedViewSet(viewsets.ModelViewSet):
         if price_level:
             queryset = queryset.filter(google_place__info__contains_by={'price_level':price_level})
 
-        city_state = self.request.query_params.get('city_state')
+        city_state = self.request.query_params.get('city_states')
         if city_state:
             city_state = city_state.split(',')
             queryset = queryset.filter(
