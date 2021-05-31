@@ -163,13 +163,13 @@ class CategoriesViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         queryset = self.queryset
-        categories = self.request.query_params.get('categories')
-        if categories is not None:
-            categories = categories.split(',')
-            queryset = queryset.filter(
-                categories__in = categories
-            )
-            return queryset
+        # categories = self.request.query_params.get('categories')
+        # if categories is not None:
+        #     categories = categories.split(',')
+        #     queryset = queryset.filter(
+        #         categories__in = categories
+        #     )
+        #     return queryset
         queryset = queryset.filter(Q(user=self.request.user) | Q(user__in=self.request.user.profile.friends.all())).exclude(categories__isnull = True)
         #filtering with user_ids filter
         user_ids = self.request.query_params.get('user_ids')
