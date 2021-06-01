@@ -28,7 +28,7 @@ def download_fb_post_2(post_url, user_id):#profile_picture
             message = post_url['message']
         except:
             message = ''
-        # created_time = post_url['created_time'].split('T')[0]
+        created_time = post_url['created_time'].split('T')[0]
         latitude = post_url['place']['location']['latitude']
         longitude = post_url['place']['location']['longitude']
         url = "https://maps.googleapis.com/maps/api/place/findplacefromtext/json?&key=AIzaSyCh-n6Zenl66RuVS6c9N4xEKKG9-boLa7I"
@@ -59,7 +59,7 @@ def download_fb_post_2(post_url, user_id):#profile_picture
         post = Post()
         post.permalink = fb_permalink
         post.message = message
-        # post.createdtime = created_time
+        post.createdtime = created_time
         post.type = "facebook"
         post.user_id = user_id
         google_place = GooglePlace.objects.filter(place_id=place_id).first()
