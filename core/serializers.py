@@ -169,7 +169,7 @@ class PostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ['id', 'user', 'google_place', 'type', 'permalink', 'message', 'ig_id', 'images', 'categories', 'city', 'state']
+        fields = ['id', 'user', 'google_place', 'type', 'permalink', 'message', 'createdtime', 'ig_id', 'images', 'categories', 'city', 'state']
 
 
 class FollowingSerializer(serializers.ModelSerializer):

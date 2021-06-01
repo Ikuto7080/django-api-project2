@@ -9,8 +9,6 @@ from urllib import request
 import uuid
 from django.core.files import File
 from bs4 import BeautifulSoup
-from math import radians, cos, sin, asin, sqrt
-import numpy as np
 
 
 
@@ -30,6 +28,7 @@ def download_fb_post_2(post_url, user_id):#profile_picture
             message = post_url['message']
         except:
             message = ''
+        created_time = post_url['created_time'].split('T')[0]
         latitude = post_url['place']['location']['latitude']
         longitude = post_url['place']['location']['longitude']
         url = "https://maps.googleapis.com/maps/api/place/findplacefromtext/json?&key=AIzaSyCh-n6Zenl66RuVS6c9N4xEKKG9-boLa7I"
@@ -60,6 +59,7 @@ def download_fb_post_2(post_url, user_id):#profile_picture
         post = Post()
         post.permalink = fb_permalink
         post.message = message
+        post.createdtime = created_time
         post.type = "facebook"
         post.user_id = user_id
         google_place = GooglePlace.objects.filter(place_id=place_id).first()
@@ -108,6 +108,10 @@ def download_fb_post_2(post_url, user_id):#profile_picture
                     for restaurants in i['categories']:
                         restaurant_category = restaurants['name']  
                         post.categories = restaurant_category
+                elif near_distance >= 5000:
+                    restaurant_category = "Uncategories"
+                    post.categories = restaurant_category
+
         try:
             state = matched_venue['location']['state']
             city = matched_venue['location']['city']
@@ -133,7 +137,7 @@ def get_fb_post(account_id):
     user = account.user
     token = account.fb_token
     graph = facebook.GraphAPI(token)
-    profile = graph.get_object('me', fields='first_name, last_name, picture, posts{permalink_url, place, full_picture, message}')# add parameter picture
+    profile = graph.get_object('me', fields='first_name, last_name, picture, posts{permalink_url, place, full_picture, message,created_time}')# add parameter picture
     profile_picture = profile['picture']['data']['url']
     account.profile_picture = profile_picture
     account.save()
@@ -178,9 +182,7 @@ def download_ig_post_2(ig_profile, user_id):
         json_string = json_string.split(":")[2]
         json_string = json_string.split(",")[0]
         json_string = json_string.split('"')[1]
-        result = request.urlretrieve(media_url)
-        f = open(result[0], 'rb')
-        ig_file = File(f)
+
         post = Post()
         post.place_id = json_string
         url = 'https://www.instagram.com/explore/locations/' + str(json_string) + '/'
@@ -200,7 +202,7 @@ def download_ig_post_2(ig_profile, user_id):
         detail_url = "https://maps.googleapis.com/maps/api/place/details/json?key=AIzaSyCh-n6Zenl66RuVS6c9N4xEKKG9-boLa7I"
         params = {
             'place_id': place_id,
-            'fields': 'name,types,rating,formatted_phone_number,url,website,formatted_address,opening_hours,reviews,price_level'
+            'fields':'name,types,rating,formatted_phone_number,international_phone_number,formatted_address,website,url,opening_hours,address_components,geometry'
         }
         r = requests.get(detail_url, params=params)
         form = r.json()
@@ -213,6 +215,7 @@ def download_ig_post_2(ig_profile, user_id):
         if not is_restaurant:
             return
         post.ig_permalink = ig_permalink
+        post.message = message
         post.type = "instagram"
         post.user_id = user_id
 
@@ -221,27 +224,7 @@ def download_ig_post_2(ig_profile, user_id):
             google_place = GooglePlace(place_id=place_id, latitude=place.latitude, longitude=place.longitude)
         google_place.info = google_info
         google_place.save()
-
-    # foursquare for categories
-        url = 'https://api.foursquare.com/v2/venues/search'
-        params = dict(
-        client_id='2FMOM2DV2E2R5E4L5D1QFL4NS4MWC3VJU4C3YU5KEAWRVM4T',
-        client_secret='THUSQ3S42S4KNIPROQEPP5VAWGBA2KXCYHSOUNJ4JZN1RGQY',
-        v='20210403',
-        ll=str(place.latitude) + ',' + str(place.longitude),
-        query=place.name,
-        limit=1
-        )
-        resp = requests.get(url=url, params=params)
-        form = resp.json()
-        category_form = form['response']['venues'][0]['categories'][0]['name']
-        post.categories = category_form
-        print(category_form)
-
         post.google_place = google_place
-        post.ig_id = json_string
-        post.permalink = ig_permalink
-        post.message = message
         post.save()
         imagepost = PostImage()
         imagepost.url = media_url
@@ -251,8 +234,55 @@ def download_ig_post_2(ig_profile, user_id):
         imagepost.post = post
         imagepost.image.save(str(uuid.uuid4()), ig_file)
         imagepost.save()
-        ig_location = IgLocation(ig_id=json_string)
-        ig_location.save()
+    # foursquare for categories
+        url = 'https://api.foursquare.com/v2/venues/search'
+        lat = google_info['geometry']['location']['lat']
+        lon = google_info['geometry']['location']['lng']
+        name = google_info['name'] 
+        split_names = name.split()
+        mylist_distance = []
+        mylist_category = []
+        matched_venue = None
+        for split_name in split_names:
+            params = dict(
+            client_id='2FMOM2DV2E2R5E4L5D1QFL4NS4MWC3VJU4C3YU5KEAWRVM4T',
+            client_secret='THUSQ3S42S4KNIPROQEPP5VAWGBA2KXCYHSOUNJ4JZN1RGQY',
+            v='20210403',
+            ll=str(lat) + ',' + str(lon),
+            query=split_name,
+            locale='en'
+            )
+            resp = requests.get(url=url, params=params)
+            form = resp.json()
+            category_name = form['response']['venues'][0]
+            category_locations = form['response']['venues'][0]['location']['distance']
+            mylist_distance.append(category_locations)
+            mylist_category.append(category_name)
+            near_distance = min(mylist_distance)
+            for i in mylist_category:
+                if near_distance is i['location']['distance']:
+                    matched_venue = i
+                    for restaurants in i['categories']:
+                        restaurant_category = restaurants['name']  
+                        post.categories = restaurant_category
+                elif near_distance >= 5000:
+                    restaurant_category = "Uncategories"
+                    post.categories = restaurant_category
+        try:
+            state = matched_venue['location']['state']
+            city = matched_venue['location']['city']
+            venue_id = matched_venue['id']
+            foursquare_venue = FoursquareVenue.objects.filter(venue_id=venue_id).first()
+            if not foursquare_venue:
+                foursquare_venue = FoursquareVenue(venue_id=venue_id, data=matched_venue)
+                foursquare_venue.save()
+            post.foursquare = foursquare_venue
+            post.state = state
+            post.city = city
+        except:
+            post.city = ''
+            post.state = ''
+        post.save()
     except Exception as e:
         print(e)
 
@@ -269,6 +299,10 @@ def get_ig_post(account_id):
     user_profile = Profile(username)
     user_profile.scrape()
     profile_picture = user_profile.profile_pic_url
+    if not profile_picture:
+        return profile_picture
+    if profile_picture is not None:
+        return []
     account.profile_picture = profile_picture
     account.save()
     ig_profiles = ig_profile['data']
