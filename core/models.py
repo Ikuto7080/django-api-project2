@@ -77,6 +77,7 @@ class Post(models.Model):
     type = models.CharField(max_length=50, choices=[('facebook', 'Facebook'),('instagram', 'Instagram')])
     permalink = models.URLField(max_length=1000)
     message = models.CharField(max_length=1000, null=True, blank=True)
+    createdtime = models.CharField(max_length=1000, null=True, blank=True)
     ig_id = models.CharField(max_length=1000, blank=True)
     categories = models.CharField(max_length=100, null=True, blank=True)
     state = models.CharField(max_length=1000, null=True, blank=True)
