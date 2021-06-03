@@ -78,6 +78,8 @@ class AccountSerializer(serializers.ModelSerializer):
                 if follow_line_id:
                     follow_account = Account.objects.filter(line_user_id=follow_line_id).first()
                     follow_account.user.profile.friends.add(account.user)
+                    account.inviter = follow_account
+                    account.save()
                 return account
 
           elif ig_code:
@@ -110,6 +112,8 @@ class AccountSerializer(serializers.ModelSerializer):
                 if follow_line_id:
                     follow_account = Account.objects.filter(line_user_id=follow_line_id).first()
                     follow_account.user.profile.friends.add(account.user)
+                    account.inviter = follow_account
+                    account.save()
                 return account
                 
           else:
