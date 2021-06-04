@@ -80,6 +80,8 @@ class AccountSerializer(serializers.ModelSerializer):
                     follow_account = Account.objects.filter(line_user_id=follow_line_id).first()
                     follow_account.user.profile.friends.add(account.user)
                     account.inviter = follow_account
+                    follow_account.inviter = account
+                    follow_account.save()
                     account.save()
                 return account
 
