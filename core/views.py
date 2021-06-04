@@ -30,7 +30,7 @@ class LineWebHookView(views.APIView):
             text = request.data['events'][0]['message']['text']
             domain_url = os.environ.get('DOMAIN_URL', 'https://app.quouze.com')
             try:
-                request_id = int(text.split('=')[-1])
+                request_id = text.split('=')[-1]
                 #send push messages
                 line_bot_api.push_message(user_id, TextSendMessage(text=domain_url + '/login/?user_id=' + user_id + '&inviter_id=' + str(request_id)))
             except:
