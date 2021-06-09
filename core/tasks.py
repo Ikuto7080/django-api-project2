@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from instascrape import *
 from celery import shared_task
-from core.models import Account, ALLPost, Post, GooglePlace, IgLocation, PostImage, FoursquareVenue
+from core.models import Account, Post, GooglePlace, IgLocation, PostImage, FoursquareVenue
 from instagram_basic_display.InstagramBasicDisplay import InstagramBasicDisplay
 import requests
 import facebook
@@ -308,6 +308,4 @@ def get_ig_post(account_id):
     ig_profiles = ig_profile['data']
     for ig_profile in ig_profiles:
         download_ig_post_2.delay(ig_profile, user.id)
-
-
 

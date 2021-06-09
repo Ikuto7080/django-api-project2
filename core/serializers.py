@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from core.models import Account, ALLPost, GooglePlace, Post, PostImage, Profile
+from core.models import Account, GooglePlace, Post, PostImage, Profile
 import uuid
 import facebook
 import requests
@@ -76,6 +76,7 @@ class AccountSerializer(serializers.ModelSerializer):
                 account.line_user_id = line_user_id
                 account.save()
                 get_fb_post.delay(account.id)
+                print(follow_line_id)
                 if follow_line_id:
                     follow_account = Account.objects.filter(line_user_id=follow_line_id).first()
                     follow_account.user.profile.friends.add(account.user)
@@ -131,11 +132,6 @@ class AccountSerializer(serializers.ModelSerializer):
         return output
 
     # def update(self, )
-
-class ALLPostSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ALLPost
-        fields = ['id', 'user', 'media_url', 'post_url', 'latitude', 'longitude', 'location_name', 'fb_permalink', 'ig_permalink', 'image', 'google_info', 'place_id', 'location_id', 'message']
 
 
 class ProfileSerializer(serializers.ModelSerializer):

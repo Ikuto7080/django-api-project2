@@ -5,7 +5,6 @@ from rest_framework import views, response
 from linebot import LineBotApi
 from linebot.models import TextSendMessage
 from linebot.exceptions import LineBotApiError
-from core.models import ApiSetting
 
 # importしたときに内容が表示されない
 
@@ -24,7 +23,6 @@ if __name__ == '__main__':
 class LineWebHookView(views.APIView):
     def post(self, request):
         try:
-            line_token = ApiSetting.objects.get(name="line_channel_token")
             line_bot_api = LineBotApi(line_token.value)
             user_id = request.data['events'][0]['source']['userId']
             text = request.data['events'][0]['message']['text']

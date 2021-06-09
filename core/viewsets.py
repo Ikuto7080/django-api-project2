@@ -1,8 +1,8 @@
 from django.contrib.auth.models import User
 from rest_framework import viewsets, permissions, response, pagination
 from rest_framework.permissions import AllowAny
-from core.serializers import UserSerializer, AccountSerializer, ALLPostSerializer, GooglePlaceSerializer, PostSerializer, ProfileSerializer, CategoriesSerializer, CityStateSerializer
-from core.models import Account, ALLPost, GooglePlace, Post, Profile
+from core.serializers import UserSerializer, AccountSerializer, GooglePlaceSerializer, PostSerializer, ProfileSerializer, CategoriesSerializer, CityStateSerializer
+from core.models import Account, GooglePlace, Post, Profile
 from django.db.models import Q
 from rest_framework.decorators import action
 
@@ -48,10 +48,7 @@ class AccountViewSet(viewsets.ModelViewSet):
         else:
             return [permissions.IsAuthenticated()]
 
-class ALLPostViewSet(viewsets.ModelViewSet):
-    queryset = ALLPost.objects.all()
-    serializer_class = ALLPostSerializer
-    permissions_classes = [permissions.AllowAny()]
+
 
 class GooglePlaceViewSet(viewsets.ModelViewSet):
     queryset = GooglePlace.objects.all()

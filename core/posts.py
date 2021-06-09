@@ -1,4 +1,4 @@
-from core.models import Account, ALLPost, Post, GooglePlace, IgLocation, PostImage, FoursquareVenue
+from core.models import Account, Post, GooglePlace, IgLocation, PostImage, FoursquareVenue
 import requests
 import facebook
 from urllib import request
