@@ -47,6 +47,15 @@ class AccountViewSet(viewsets.ModelViewSet):
             return [permissions.AllowAny()]
         else:
             return [permissions.IsAuthenticated()]
+    @action(detail=True, methods=['get','post'])
+    #データ更新はpost,patch
+    def connect_ig(self, request, pk=None):
+        # a = self.request.query_params.get('a')
+        print(request.data.get('ig_code'))
+        account_id = request.user.account.id
+        user_id = request.user.id
+        body = {'account_id': account_id, 'user_id': user_id}
+        return response.Response(body)
 
 
 

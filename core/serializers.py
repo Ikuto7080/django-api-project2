@@ -25,15 +25,16 @@ class AccountSerializer(serializers.ModelSerializer):
     follow_line_id = serializers.CharField(required=False, write_only=True)
     class Meta:
         model = Account
-        fields = ['id', 'user', 'fb_token' , 'ig_token', 'fb_code', 'ig_code', 'fb_id', 'ig_id', 'redirect_uri', 'line_user_id', 'follow_line_id', 'profile_picture']
+        fields = ['id', 'user', 'fb_token' , 'ig_token', 'fb_code', 'ig_code', 'fb_id', 'ig_id', 'redirect_uri', 'follow_line_id', 'profile_picture']
         read_only_fields = ['user', 'fb_token', 'ig_token', 'fb_id', 'ig_id', 'profile_picture']
 
     def create(self, validated_data):
           fb_code = validated_data.get("fb_code")
           ig_code = validated_data.get("ig_code")
           redirect_uri = validated_data.get("redirect_uri", "https://localhost:8080/insta/")
-          line_user_id = validated_data.get("line_user_id")
-          follow_line_id = validated_data.get("follow_line_id")
+          fb_id = validated_data.get("fb_id")
+        #   line_user_id = validated_data.get("line_user_id")
+        #   follow_line_id = validated_data.get("follow_line_id")
 
           if fb_code:
                 url = "https://graph.facebook.com/v9.0/oauth/access_token"
@@ -53,13 +54,13 @@ class AccountSerializer(serializers.ModelSerializer):
                 #Accountが存在するか確認する
                 fb_id = profile['id'] 
                 account = Account.objects.filter(fb_id=fb_id).first()
-                if not account and line_user_id:
-                    account = Account.objects.filter(line_user_id=line_user_id).first()
-                    if account and not account.fb_id:
-                        account.fb_id = fb_id
-                        account.fb_token = fb_token
-                        get_fb_post.delay(account.id)
-                        account.save()
+                # if not account and line_user_id:
+                #     account = Account.objects.filter(line_user_id=line_user_id).first()
+                #     if account and not account.fb_id:
+                #         account.fb_id = fb_id
+                #         account.fb_token = fb_token
+                #         get_fb_post.delay(account.id)
+                #         account.save()
 
                 if account:
                       return account
@@ -73,15 +74,15 @@ class AccountSerializer(serializers.ModelSerializer):
                 account.user = user
                 account.fb_id = profile['id']
                 account.fb_token = fb_token
-                account.line_user_id = line_user_id
+                # account.line_user_id = line_user_id
                 account.save()
                 get_fb_post.delay(account.id)
-                print(follow_line_id)
-                if follow_line_id:
-                    follow_account = Account.objects.filter(line_user_id=follow_line_id).first()
-                    follow_account.user.profile.friends.add(account.user)
-                    account.inviter = follow_account
-                    account.save()
+                # print(follow_line_id)
+                # if follow_line_id:
+                #     follow_account = Account.objects.filter(line_user_id=follow_line_id).first()
+                #     follow_account.user.profile.friends.add(account.user)
+                #     account.inviter = follow_account
+                #     account.save()
                 return account
 
           elif ig_code:
@@ -92,13 +93,20 @@ class AccountSerializer(serializers.ModelSerializer):
                 ig_profile = instagram_basic_display.get_user_profile()
                 ig_id = ig_profile['id']
                 account = Account.objects.filter(ig_id=ig_id).first()
-                if not account and line_user_id:
-                    account = Account.objects.filter(line_user_id=line_user_id).first()
-                    if account and not account.ig_id:
+                if fb_id:
+                    account = Account.objects.filter(fb_id=fb_id).first()
+                    if not account.ig_id:
                         account.ig_id = ig_id
                         account.ig_token = auth_token['access_token']
                         get_ig_post.delay(account.id)
                         account.save()
+                # if not account and line_user_id:
+                #     account = Account.objects.filter(line_user_id=line_user_id).first()
+                #     if account and not account.ig_id:
+                #         account.ig_id = ig_id
+                #         account.ig_token = auth_token['access_token']
+                #         get_ig_post.delay(account.id)
+                #         account.save()
                 if account:
                       return account 
                 user = User(username=str(uuid.uuid4()))
@@ -108,14 +116,14 @@ class AccountSerializer(serializers.ModelSerializer):
                 account.user = user
                 account.ig_id = ig_profile['id']
                 account.ig_token = auth_token['access_token']
-                account.line_user_id = line_user_id
+                # account.line_user_id = line_user_id
                 account.save()
                 get_ig_post.delay(account.id)
-                if follow_line_id:
-                    follow_account = Account.objects.filter(line_user_id=follow_line_id).first()
-                    follow_account.user.profile.friends.add(account.user)
-                    account.inviter = follow_account
-                    account.save()
+                # if follow_line_id:
+                #     follow_account = Account.objects.filter(line_user_id=follow_line_id).first()
+                #     follow_account.user.profile.friends.add(account.user)
+                #     account.inviter = follow_account
+                #     account.save()
                 return account
                 
           else:
