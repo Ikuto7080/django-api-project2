@@ -20,18 +20,18 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 class AccountSerializer(serializers.ModelSerializer):
     fb_code = serializers.CharField(required=False, write_only=True)
     ig_code = serializers.CharField(required=False, write_only=True)
-    fb_id = serializers.CharField(required=False,write_only=True)
+    account_id = serializers.CharField(required=False,write_only=True)
     # user = UserSerializer(read_only=True)
     redirect_uri = serializers.URLField(required=False, write_only=True)
     class Meta:
         model = Account
-        fields = ['id', 'user', 'fb_token' , 'ig_token', 'fb_code', 'ig_code', 'fb_id', 'ig_id', 'redirect_uri', 'profile_picture']
+        fields = ['id', 'user', 'fb_token' , 'ig_token', 'fb_code', 'ig_code', 'fb_id', 'ig_id', 'redirect_uri', 'profile_picture', 'account_id']
         read_only_fields = ['user', 'fb_token', 'ig_token', 'fb_id', 'ig_id', 'profile_picture']
 
     def create(self, validated_data):
           fb_code = validated_data.get("fb_code")
           ig_code = validated_data.get("ig_code")
-          fb_id = validated_data.get("fb_id")
+          account_id = validated_data.get("account_id")
           redirect_uri = validated_data.get("redirect_uri", "https://localhost:8080/insta/")
 
           if fb_code:
@@ -69,13 +69,12 @@ class AccountSerializer(serializers.ModelSerializer):
                 return account
 
           elif ig_code:
-                print('serializers.data: ' + str(ig_code))
                 instagram_basic_display = InstagramBasicDisplay(app_id ='909807339845904', app_secret='f095f16729ea435ff0c36d6fda438d83', redirect_url= redirect_uri)
                 auth_token = instagram_basic_display.get_o_auth_token(ig_code)
                 instagram_basic_display.set_access_token(auth_token['access_token'])
                 ig_profile = instagram_basic_display.get_user_profile()
                 ig_id = ig_profile['id']
-                account = Account.objects.filter(fb_id=fb_id).first()
+                account = Account.objects.filter(id=account_id).first()
                 account.ig_id = ig_profile['id']
                 account.ig_token = auth_token['access_token']
                 account.save()

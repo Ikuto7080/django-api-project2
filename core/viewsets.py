@@ -61,7 +61,6 @@ class AccountViewSet(viewsets.ModelViewSet):
         return response.Response(body)
 
 
-
 class GooglePlaceViewSet(viewsets.ModelViewSet):
     queryset = GooglePlace.objects.all()
     serializer_class = GooglePlaceSerializer
