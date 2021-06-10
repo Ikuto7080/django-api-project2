@@ -20,19 +20,19 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 class AccountSerializer(serializers.ModelSerializer):
     fb_code = serializers.CharField(required=False, write_only=True)
     ig_code = serializers.CharField(required=False, write_only=True)
-    user = UserSerializer(read_only=True)
+    fb_id = serializers.CharField(required=False,write_only=True)
+    # user = UserSerializer(read_only=True)
     redirect_uri = serializers.URLField(required=False, write_only=True)
-    follow_line_id = serializers.CharField(required=False, write_only=True)
     class Meta:
         model = Account
-        fields = ['id', 'user', 'fb_token' , 'ig_token', 'fb_code', 'ig_code', 'fb_id', 'ig_id', 'redirect_uri', 'follow_line_id', 'profile_picture']
+        fields = ['id', 'user', 'fb_token' , 'ig_token', 'fb_code', 'ig_code', 'fb_id', 'ig_id', 'redirect_uri', 'profile_picture']
         read_only_fields = ['user', 'fb_token', 'ig_token', 'fb_id', 'ig_id', 'profile_picture']
 
     def create(self, validated_data):
           fb_code = validated_data.get("fb_code")
           ig_code = validated_data.get("ig_code")
+          fb_id = validated_data.get("fb_id")
           redirect_uri = validated_data.get("redirect_uri", "https://localhost:8080/insta/")
-        #   follow_line_id = validated_data.get("follow_line_id")
 
           if fb_code:
                 url = "https://graph.facebook.com/v9.0/oauth/access_token"
@@ -52,7 +52,8 @@ class AccountSerializer(serializers.ModelSerializer):
                 #Accountが存在するか確認する
                 fb_id = profile['id'] 
                 account = Account.objects.filter(fb_id=fb_id).first()
-
+                if account:
+                    return account
                 #userのfb_id
                 user = User(username=str(uuid.uuid4()))
                 user.first_name = profile['first_name']
@@ -68,44 +69,17 @@ class AccountSerializer(serializers.ModelSerializer):
                 return account
 
           elif ig_code:
-              #128183525822395, 7c0f1ebb5832df8f18b09bcd5ddbc133
+                print('serializers.data: ' + str(ig_code))
                 instagram_basic_display = InstagramBasicDisplay(app_id ='909807339845904', app_secret='f095f16729ea435ff0c36d6fda438d83', redirect_url= redirect_uri)
                 auth_token = instagram_basic_display.get_o_auth_token(ig_code)
                 instagram_basic_display.set_access_token(auth_token['access_token'])
                 ig_profile = instagram_basic_display.get_user_profile()
                 ig_id = ig_profile['id']
-                account = Account.objects.filter(ig_id=ig_id).first()
-                if not account and fb_id:
-                    account = Account.objects.filter(fb_id=fb_id).first()
-                    if account and not account.ig_id:
-                        account.ig_id = ig_id
-                        account.ig_token = auth_token['access_token']
-                        get_ig_post.delay(account.id)
-                        account.save()
-                # if not account and line_user_id:
-                #     account = Account.objects.filter(line_user_id=line_user_id).first()
-                #     if account and not account.ig_id:
-                #         account.ig_id = ig_id
-                #         account.ig_token = auth_token['access_token']
-                #         get_ig_post.delay(account.id)
-                #         account.save()
-                # if account:
-                #       return account 
-                user = User(username=str(uuid.uuid4()))
-                user.first_name = ig_profile['username']
-                user.save()
-                account = Account()
-                account.user = user
+                account = Account.objects.filter(fb_id=fb_id).first()
                 account.ig_id = ig_profile['id']
                 account.ig_token = auth_token['access_token']
-                # account.line_user_id = line_user_id
-                # account.save()
-                # get_ig_post.delay(account.id)
-                # if follow_line_id:
-                #     follow_account = Account.objects.filter(line_user_id=follow_line_id).first()
-                #     follow_account.user.profile.friends.add(account.user)
-                #     account.inviter = follow_account
-                #     account.save()
+                account.save()
+                # get_ig_post(account.id)
                 return account
                 
           else:

@@ -36,8 +36,7 @@ class ProfileViewSet(viewsets.ModelViewSet):
 class AccountViewSet(viewsets.ModelViewSet):
     queryset = Account.objects.all()
     serializer_class = AccountSerializer
-   
-    
+
     def get_queryset(self):
         queryset = self.queryset.filter(user=self.request.user)
         return queryset
@@ -47,13 +46,18 @@ class AccountViewSet(viewsets.ModelViewSet):
             return [permissions.AllowAny()]
         else:
             return [permissions.IsAuthenticated()]
-
-    @action(detail=True, methods=['get'])
+    @action(detail=True, methods=['post'])
+    #データ更新はpost,patch
     def connect_ig(self, request, pk=None):
-        user_id=request.user.id
-        account_id=request.user.account.id
-        pk=pk
-        body={'user_id':user_id, 'account_id':account_id, 'pk':pk}
+        # a = self.request.query_params.get('a')
+        data=request.data
+        serializer = self.get_serializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return response.Response({'status':'add ig_code'})
+        account_id = request.user.account.id
+        user_id = request.user.id
+        body = {'account_id': account_id, 'user_id': user_id}
         return response.Response(body)
 
 
