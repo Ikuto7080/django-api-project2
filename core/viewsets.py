@@ -48,6 +48,14 @@ class AccountViewSet(viewsets.ModelViewSet):
         else:
             return [permissions.IsAuthenticated()]
 
+    @action(detail=True, methods=['get'])
+    def connect_ig(self, request, pk=None):
+        user_id=request.user.id
+        account_id=request.user.account.id
+        pk=pk
+        body={'user_id':user_id, 'account_id':account_id, 'pk':pk}
+        return response.Response(body)
+
 
 
 class GooglePlaceViewSet(viewsets.ModelViewSet):
