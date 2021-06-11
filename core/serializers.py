@@ -75,7 +75,7 @@ class AccountSerializer(serializers.ModelSerializer):
                 ig_profile = instagram_basic_display.get_user_profile()
                 ig_id = ig_profile['id']
                 account = Account.objects.filter(id=account_id).first()
-                account.ig_id = ig_profile['id']
+                account.ig_id = ig_id
                 account.ig_token = auth_token['access_token']
                 account.save()
                 # get_ig_post(account.id)
