@@ -15,6 +15,11 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         model = User
         fields = ['id', 'url', 'first_name', 'last_name', 'email', 'is_staff', 'profile_picture']
 
+class PublicUserSerializer(serializers.ModelSerializer):
+    profile_picture = serializers.CharField(source='account.profile_picture')
+    class Meta:
+        model = User
+        fields = ['id', 'first_name', 'last_name', 'profile_picture']
 
 
 class AccountSerializer(serializers.ModelSerializer):
@@ -94,7 +99,11 @@ class AccountSerializer(serializers.ModelSerializer):
         output['token'] = token.key
         return output
 
-    # def update(self, )
+class PublicAccountSerializer(serializers.ModelSerializer):
+    user = PublicUserSerializer(read_only=True)
+    class Meta:
+        model = Account
+        fields = ['id', 'user']
 
 
 class ProfileSerializer(serializers.ModelSerializer):
@@ -128,6 +137,15 @@ class PostImageSerializer(serializers.ModelSerializer):
 class PostSerializer(serializers.ModelSerializer):
     images = PostImageSerializer(source='postimage_set', many=True)
     user = UserSerializer(read_only=True)
+    google_place = GooglePlaceSerializer(read_only=True)
+
+    class Meta:
+        model = Post
+        fields = ['id', 'user', 'google_place', 'type', 'permalink', 'message', 'createdtime', 'ig_id', 'images', 'categories', 'city', 'state']
+
+class PublicPostSerializer(serializers.ModelSerializer):
+    images = PostImageSerializer(source='postimage_set', many=True)
+    user = PublicUserSerializer(read_only=True)
     google_place = GooglePlaceSerializer(read_only=True)
 
     class Meta:
