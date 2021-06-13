@@ -12,7 +12,6 @@ class MyPagenation(pagination.PageNumberPagination):
     max_page_size = 100
 
 
-
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
@@ -31,11 +30,12 @@ class AccountViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         queryset = self.queryset
-        queryset = queryset.filter(user=self.request.user)
+        if self.request.user.is_authenticated:
+            queryset = queryset.filter(user=self.request.user)
         return queryset
 
     def get_permissions(self):
-        if self.request.method == 'GET' or 'POST':
+        if self.request.method == 'GET':
             return [permissions.AllowAny()]
         else:
             return [permissions.IsAuthenticated()]
