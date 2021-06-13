@@ -31,8 +31,7 @@ class AccountViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         queryset = self.queryset
-        if self.request.user.is_authenticated:
-            queryset = queryset.filter(user=self.request.user)
+        queryset = queryset.filter(user=self.request.user)
         return queryset
 
     def get_permissions(self):
