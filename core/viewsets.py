@@ -24,10 +24,6 @@ class ProfileViewSet(viewsets.ModelViewSet):
     serializer_class = ProfileSerializer
     permissions_classes = [AllowAny]
 
-    # def get_queryset(self):
-    #     queryset = self.queryset.filter(user=self.request.user.id)
-    #     return queryset
-
 
 class AccountViewSet(viewsets.ModelViewSet):
     queryset = Account.objects.all()
@@ -40,7 +36,7 @@ class AccountViewSet(viewsets.ModelViewSet):
         return queryset
 
     def get_permissions(self):
-        if self.request.method == 'GET':
+        if self.request.method == 'GET' or 'POST':
             return [permissions.AllowAny()]
         else:
             return [permissions.IsAuthenticated()]
@@ -80,8 +76,6 @@ class PostViewSet(viewsets.ModelViewSet):
         google_place = self.request.query_params.get('google_place')
         if google_place is not None:
              queryset = self.queryset.filter(google_place=google_place)
-        return queryset
-        print(id)
         return queryset
 
 
