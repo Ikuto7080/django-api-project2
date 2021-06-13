@@ -15,13 +15,18 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         model = User
         fields = ['id', 'url', 'first_name', 'last_name', 'email', 'is_staff', 'profile_picture']
 
+class PublicUserSerializer(serializers.ModelSerializer):
+    profile_picture = serializers.CharField(source='account.profile_picture')
+    class Meta:
+        model = User
+        fields = ['id', 'first_name', 'last_name', 'profile_picture']
 
 
 class AccountSerializer(serializers.ModelSerializer):
     fb_code = serializers.CharField(required=False, write_only=True)
     ig_code = serializers.CharField(required=False, write_only=True)
     account_id = serializers.CharField(required=False,write_only=True)
-    # user = UserSerializer(read_only=True)
+    user = UserSerializer(read_only=True)
     redirect_uri = serializers.URLField(required=False, write_only=True)
     class Meta:
         model = Account
@@ -32,6 +37,7 @@ class AccountSerializer(serializers.ModelSerializer):
           fb_code = validated_data.get("fb_code")
           ig_code = validated_data.get("ig_code")
           account_id = validated_data.get("account_id")
+          follow_account_id = validated_data.get("follow_account_id")
           redirect_uri = validated_data.get("redirect_uri", "https://localhost:8080/insta/")
 
           if fb_code:
@@ -66,6 +72,11 @@ class AccountSerializer(serializers.ModelSerializer):
                 account.fb_token = fb_token
                 account.save()
                 get_fb_post.delay(account.id)
+                if follow_account_id:
+                    follow_account = Account.objects.filter(id=follow_account_id).first()
+                    follow_account.user.profile.friends.add(account.user)
+                    account.inviter = follow_account
+                    account.save()
                 return account
 
           elif ig_code:
@@ -94,7 +105,11 @@ class AccountSerializer(serializers.ModelSerializer):
         output['token'] = token.key
         return output
 
-    # def update(self, )
+class PublicAccountSerializer(serializers.ModelSerializer):
+    user = PublicUserSerializer(read_only=True)
+    class Meta:
+        model = Account
+        fields = ['id', 'user']
 
 
 class ProfileSerializer(serializers.ModelSerializer):
@@ -128,6 +143,15 @@ class PostImageSerializer(serializers.ModelSerializer):
 class PostSerializer(serializers.ModelSerializer):
     images = PostImageSerializer(source='postimage_set', many=True)
     user = UserSerializer(read_only=True)
+    google_place = GooglePlaceSerializer(read_only=True)
+
+    class Meta:
+        model = Post
+        fields = ['id', 'user', 'google_place', 'type', 'permalink', 'message', 'createdtime', 'ig_id', 'images', 'categories', 'city', 'state']
+
+class PublicPostSerializer(serializers.ModelSerializer):
+    images = PostImageSerializer(source='postimage_set', many=True)
+    user = PublicUserSerializer(read_only=True)
     google_place = GooglePlaceSerializer(read_only=True)
 
     class Meta:

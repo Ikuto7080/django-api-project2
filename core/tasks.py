@@ -31,7 +31,7 @@ def download_fb_post_2(post_url, user_id):#profile_picture
         created_time = post_url['created_time'].split('T')[0]
         latitude = post_url['place']['location']['latitude']
         longitude = post_url['place']['location']['longitude']
-        url = "https://maps.googleapis.com/maps/api/place/findplacefromtext/json?&key=AIzaSyCh-n6Zenl66RuVS6c9N4xEKKG9-boLa7I"
+        url = "https://maps.googleapis.com/maps/api/place/findplacefromtext/json?&key=AIzaSyBskgPF7N6t6bhxT1SoY2hP5OMe8knbdR0"
         params = {
         'input': location_name,
         'inputtype': 'textquery',
@@ -41,7 +41,7 @@ def download_fb_post_2(post_url, user_id):#profile_picture
         r = requests.get(url, params=params)
         form = r.json()
         place_id = form['candidates'][0]['place_id']
-        detail_url = "https://maps.googleapis.com/maps/api/place/details/json?key=AIzaSyCh-n6Zenl66RuVS6c9N4xEKKG9-boLa7I"
+        detail_url = "https://maps.googleapis.com/maps/api/place/details/json?key=AIzaSyBskgPF7N6t6bhxT1SoY2hP5OMe8knbdR0"
         params = {
             'place_id': place_id,
             'fields': 'name,types,rating,formatted_phone_number,url,website,formatted_address,opening_hours,reviews,address_components,geometry,price_level'
@@ -189,7 +189,7 @@ def download_ig_post_2(ig_profile, user_id):
         place = Location(url)
         place.scrape()
 
-        url = "https://maps.googleapis.com/maps/api/place/findplacefromtext/json?&key=AIzaSyCh-n6Zenl66RuVS6c9N4xEKKG9-boLa7I"
+        url = "https://maps.googleapis.com/maps/api/place/findplacefromtext/json?&key=AIzaSyBskgPF7N6t6bhxT1SoY2hP5OMe8knbdR0"
         params = {
             'input': place.name,
             'inputtype': 'textquery',
@@ -199,7 +199,7 @@ def download_ig_post_2(ig_profile, user_id):
         r = requests.get(url, params=params)
         form = r.json()
         place_id = form['candidates'][0]['place_id']
-        detail_url = "https://maps.googleapis.com/maps/api/place/details/json?key=AIzaSyCh-n6Zenl66RuVS6c9N4xEKKG9-boLa7I"
+        detail_url = "https://maps.googleapis.com/maps/api/place/details/json?key=AIzaSyBskgPF7N6t6bhxT1SoY2hP5OMe8knbdR0"
         params = {
             'place_id': place_id,
             'fields':'name,types,rating,formatted_phone_number,international_phone_number,formatted_address,website,url,opening_hours,address_components,geometry'

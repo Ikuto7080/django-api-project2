@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import viewsets, permissions, response, pagination
 from rest_framework.permissions import AllowAny
-from core.serializers import UserSerializer, AccountSerializer, GooglePlaceSerializer, PostSerializer, ProfileSerializer, CategoriesSerializer, CityStateSerializer
+from core.serializers import UserSerializer, AccountSerializer, GooglePlaceSerializer, PostSerializer, ProfileSerializer, CategoriesSerializer, CityStateSerializer, PublicAccountSerializer, PublicPostSerializer
 from core.models import Account, GooglePlace, Post, Profile
 from django.db.models import Q
 from rest_framework.decorators import action
@@ -29,27 +29,30 @@ class ProfileViewSet(viewsets.ModelViewSet):
     #     return queryset
 
 
-
-
-
-
 class AccountViewSet(viewsets.ModelViewSet):
     queryset = Account.objects.all()
     serializer_class = AccountSerializer
 
     def get_queryset(self):
-        queryset = self.queryset.filter(user=self.request.user)
+        queryset = self.queryset
+        if self.request.user.is_authenticated:
+            queryset = queryset.filter(user=self.request.user)
         return queryset
 
     def get_permissions(self):
-        if self.request.method == 'POST':
+        if self.request.method == 'GET':
             return [permissions.AllowAny()]
         else:
             return [permissions.IsAuthenticated()]
+
+    def get_serializer_class(self):
+        if not self.request.user.is_authenticated:
+            return PublicAccountSerializer
+        return AccountSerializer
+
     @action(detail=True, methods=['post'])
     #データ更新はpost,patch
     def connect_ig(self, request, pk=None):
-        # a = self.request.query_params.get('a')
         data=request.data
         serializer = self.get_serializer(data=data)
         if serializer.is_valid():
@@ -78,8 +81,6 @@ class PostViewSet(viewsets.ModelViewSet):
         if google_place is not None:
              queryset = self.queryset.filter(google_place=google_place)
         return queryset
-
-
         print(id)
         return queryset
 
@@ -89,6 +90,16 @@ class FeedViewSet(viewsets.ModelViewSet):
     serializer_class = PostSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+    def get_serializer_class(self):
+        if not self.request.user.is_authenticated:
+            return PublicPostSerializer
+        return PostSerializer
+
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            return [permissions.AllowAny()]
+        else:
+            return [permissions.IsAuthenticated()]
 
     def get_queryset(self):
         queryset = self.queryset
@@ -123,8 +134,8 @@ class FeedViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(
                 city__in = city_state
             )
-
-        queryset = queryset.filter(Q(user=self.request.user) | Q(user__in=self.request.user.profile.friends.all()))
+        if self.request.user.is_authenticated:
+            queryset = queryset.filter(Q(user=self.request.user) | Q(user__in=self.request.user.profile.friends.all()))
         return queryset
 
 
