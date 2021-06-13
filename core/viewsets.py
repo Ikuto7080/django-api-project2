@@ -35,7 +35,8 @@ class AccountViewSet(viewsets.ModelViewSet):
         return queryset
 
     def get_permissions(self):
-        if self.request.method == 'GET' or 'POST':
+        METHODS = ['GET', 'POST']
+        if self.request.method == METHODS:
             return [permissions.AllowAny()]
         else:
             return [permissions.IsAuthenticated()]
