@@ -72,7 +72,7 @@ class AccountSerializer(serializers.ModelSerializer):
                 account.user = user
                 account.fb_id = profile['id']
                 account.fb_token = fb_token
-                print('user: ' + user)
+                print('user: ' + str(user))
                 account.save()
                 get_fb_post.delay(account.id)
                 if follow_account_id:
