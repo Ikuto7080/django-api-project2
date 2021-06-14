@@ -31,7 +31,11 @@ class AccountSerializer(serializers.ModelSerializer):
     class Meta:
         model = Account
         fields = ['id', 'user', 'fb_token' , 'ig_token', 'fb_code', 'ig_code', 'fb_id', 'ig_id', 'redirect_uri', 'profile_picture', 'account_id']
-        read_only_fields = ['user', 'fb_token', 'ig_token', 'fb_id', 'ig_id', 'profile_picture']
+        read_only_fields = ['user', 'fb_token', 'ig_token', 'fb_id', 'ig_id']
+
+    def update(self, instance, validated_data):
+        print('update: ', validated_data, instance)
+        return super().update(instance, validated_data)
 
     def create(self, validated_data):
           print('start')
