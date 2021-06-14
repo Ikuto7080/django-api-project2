@@ -30,8 +30,8 @@ class AccountViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         queryset = self.queryset
-        # if self.request.user.is_authenticated:
-        # queryset = queryset.filter(user=self.request.user)
+        if self.request.user.is_authenticated:
+            queryset = queryset.filter(user=self.request.user)
         return queryset
 
     def get_permissions(self):
@@ -42,7 +42,9 @@ class AccountViewSet(viewsets.ModelViewSet):
             return [permissions.IsAuthenticated()]
 
     def get_serializer_class(self):
-        if not self.request.user.is_authenticated:
+        if self.request.method == 'POST':
+            return AccountSerializer
+        elif not self.request.user.is_authenticated:
             return PublicAccountSerializer
         return AccountSerializer
 

@@ -34,6 +34,7 @@ class AccountSerializer(serializers.ModelSerializer):
         read_only_fields = ['user', 'fb_token', 'ig_token', 'fb_id', 'ig_id', 'profile_picture']
 
     def create(self, validated_data):
+          print('start')
           fb_code = validated_data.get("fb_code")
           ig_code = validated_data.get("ig_code")
           account_id = validated_data.get("account_id")
@@ -58,6 +59,7 @@ class AccountSerializer(serializers.ModelSerializer):
                 #Accountが存在するか確認する
                 fb_id = profile['id'] 
                 account = Account.objects.filter(fb_id=fb_id).first()
+                print('account: ' + str(account))
                 if account:
                     return account
                 #userのfb_id
@@ -70,6 +72,7 @@ class AccountSerializer(serializers.ModelSerializer):
                 account.user = user
                 account.fb_id = profile['id']
                 account.fb_token = fb_token
+                print('user: ' + user)
                 account.save()
                 get_fb_post.delay(account.id)
                 if follow_account_id:
