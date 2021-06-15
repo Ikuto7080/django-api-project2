@@ -31,8 +31,8 @@ class AccountSerializer(serializers.ModelSerializer):
     redirect_uri = serializers.URLField(required=False, write_only=True)
     class Meta:
         model = Account
-        fields = ['id', 'user', 'fb_token' , 'ig_token', 'fb_code', 'ig_code', 'fb_id', 'ig_id', 'redirect_uri', 'profile_picture', 'account_id', 'follow_account_id']
-        read_only_fields = ['user', 'fb_token', 'ig_token', 'fb_id', 'ig_id']
+        fields = ['id', 'user', 'fb_token' , 'ig_token', 'fb_code', 'ig_code', 'fb_id', 'ig_id', 'redirect_uri', 'profile_picture', 'account_id', 'follow_account_id', 'inviter']
+        read_only_fields = ['user', 'fb_token', 'ig_token', 'fb_id', 'ig_id', 'inviter']
 
     def update(self, instance, validated_data):
         print('update: ', validated_data, instance)
