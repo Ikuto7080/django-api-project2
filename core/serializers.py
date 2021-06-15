@@ -28,6 +28,7 @@ class AccountSerializer(serializers.ModelSerializer):
     account_id = serializers.CharField(required=False,write_only=True)
     follow_account_id = serializers.CharField(required=False, write_only=True)
     user = UserSerializer(read_only=True)
+    # inviter = AccountSerializer(read_only=True)
     redirect_uri = serializers.URLField(required=False, write_only=True)
     class Meta:
         model = Account
@@ -86,6 +87,7 @@ class AccountSerializer(serializers.ModelSerializer):
                     follow_account = Account.objects.filter(id=follow_account_id).first()
                     print('follow_account: ', follow_account)
                     follow_account.user.profile.friends.add(account.user)
+                    account.user.profile.friends.add(follow_account.user)
                     account.inviter = follow_account
                     print('account.inviter: ', account.inviter)
                     account.save()
