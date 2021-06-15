@@ -26,11 +26,12 @@ class AccountSerializer(serializers.ModelSerializer):
     fb_code = serializers.CharField(required=False, write_only=True)
     ig_code = serializers.CharField(required=False, write_only=True)
     account_id = serializers.CharField(required=False,write_only=True)
+    follow_account_id = serializers.CharField(required=False, write_only=True)
     user = UserSerializer(read_only=True)
     redirect_uri = serializers.URLField(required=False, write_only=True)
     class Meta:
         model = Account
-        fields = ['id', 'user', 'fb_token' , 'ig_token', 'fb_code', 'ig_code', 'fb_id', 'ig_id', 'redirect_uri', 'profile_picture', 'account_id']
+        fields = ['id', 'user', 'fb_token' , 'ig_token', 'fb_code', 'ig_code', 'fb_id', 'ig_id', 'redirect_uri', 'profile_picture', 'account_id', 'follow_account_id']
         read_only_fields = ['user', 'fb_token', 'ig_token', 'fb_id', 'ig_id']
 
     def update(self, instance, validated_data):
@@ -43,6 +44,7 @@ class AccountSerializer(serializers.ModelSerializer):
           ig_code = validated_data.get("ig_code")
           account_id = validated_data.get("account_id")
           follow_account_id = validated_data.get("follow_account_id")
+          print('follow_account_id: ', follow_account_id)
           redirect_uri = validated_data.get("redirect_uri", "https://localhost:8080/insta/")
 
           if fb_code:
@@ -63,7 +65,7 @@ class AccountSerializer(serializers.ModelSerializer):
                 #Accountが存在するか確認する
                 fb_id = profile['id'] 
                 account = Account.objects.filter(fb_id=fb_id).first()
-                print('account: ' + str(account))
+                # print('account: ' + str(account))
                 if account:
                     return account
                 #userのfb_id
@@ -80,9 +82,12 @@ class AccountSerializer(serializers.ModelSerializer):
                 account.save()
                 get_fb_post.delay(account.id)
                 if follow_account_id:
+                    print('follo_account_id: ', follow_account_id)
                     follow_account = Account.objects.filter(id=follow_account_id).first()
+                    print('follow_account: ', follow_account)
                     follow_account.user.profile.friends.add(account.user)
                     account.inviter = follow_account
+                    print('account.inviter: ', account.inviter)
                     account.save()
                 return account
 
