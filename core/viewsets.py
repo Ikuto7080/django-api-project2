@@ -44,7 +44,7 @@ class AccountViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.request.method == 'POST':
             return AccountSerializer
-        elif not self.request.user.is_authenticated:
+        elif not self.request.user.is_authenticated or self.request.user.is_authenticated:
             return PublicAccountSerializer
         return AccountSerializer
 

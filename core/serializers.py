@@ -27,10 +27,11 @@ class AccountSerializer(serializers.ModelSerializer):
     ig_code = serializers.CharField(required=False, write_only=True)
     account_id = serializers.CharField(required=False,write_only=True)
     user = UserSerializer(read_only=True)
+    inviter = serializers.CharField(required=False,write_only=True)
     redirect_uri = serializers.URLField(required=False, write_only=True)
     class Meta:
         model = Account
-        fields = ['id', 'user', 'fb_token' , 'ig_token', 'fb_code', 'ig_code', 'fb_id', 'ig_id', 'redirect_uri', 'profile_picture', 'account_id']
+        fields = ['id', 'user', 'fb_token' , 'ig_token', 'fb_code', 'ig_code', 'fb_id', 'ig_id', 'redirect_uri', 'profile_picture', 'account_id', 'inviter']
         read_only_fields = ['user', 'fb_token', 'ig_token', 'fb_id', 'ig_id', 'profile_picture']
 
     def create(self, validated_data):
@@ -72,7 +73,7 @@ class AccountSerializer(serializers.ModelSerializer):
                 account.user = user
                 account.fb_id = profile['id']
                 account.fb_token = fb_token
-                print('user: ' + user)
+                print('user: ' + str(user))
                 account.save()
                 get_fb_post.delay(account.id)
                 if follow_account_id:
