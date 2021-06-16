@@ -22,10 +22,10 @@ class PublicUserSerializer(serializers.ModelSerializer):
         fields = ['id', 'first_name', 'last_name', 'profile_picture']
 
 class InviterAccountSerializer(serializers.ModelSerializer):
-    inviter = serializers.CharField(source='account.inviter.user.id')
+    inviter = UserSerializer(source='account.inviter.user')
     class Meta:
         model = Account
-        fields = ['id','inviter']
+        fields = ['inviter']
 
 class AccountSerializer(serializers.ModelSerializer):
     fb_code = serializers.CharField(required=False, write_only=True)
@@ -33,7 +33,7 @@ class AccountSerializer(serializers.ModelSerializer):
     account_id = serializers.CharField(required=False,write_only=True)
     follow_account_id = serializers.CharField(required=False, write_only=True)
     user = UserSerializer(read_only=True)
-    inviter = InviterAccountSerializer(read_only=True)
+    inviter = UserSerializer(source='inviter.user', read_only=True)
     redirect_uri = serializers.URLField(required=False, write_only=True)
     class Meta:
         model = Account
