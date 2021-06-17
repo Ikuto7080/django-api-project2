@@ -1,1 +1,0 @@
-list=['zoo', 'ocean', 'sea', 'apple', 'orange', 'air']
