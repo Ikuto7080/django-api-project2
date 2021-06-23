@@ -1,8 +1,8 @@
 from django.contrib.auth.models import User
 from rest_framework import viewsets, permissions, response, pagination
 from rest_framework.permissions import AllowAny
-from core.serializers import UserSerializer, AccountSerializer, GooglePlaceSerializer, PostSerializer, ProfileSerializer, CategoriesSerializer, CityStateSerializer, PublicAccountSerializer, PublicPostSerializer
-from core.models import Account, GooglePlace, Post, Profile
+from core.serializers import UserSerializer, AccountSerializer, GooglePlaceSerializer, PostSerializer, ProfileSerializer, CategoriesSerializer, CityStateSerializer, PublicAccountSerializer, PublicPostSerializer, DeviceSerializer
+from core.models import Account, GooglePlace, Post, Profile, Device
 from django.db.models import Q
 from rest_framework.decorators import action
 
@@ -235,5 +235,9 @@ class CityStateViewSet(viewsets.ModelViewSet):
         return queryset.values('city', 'state').distinct()
 
 
+class DeviceViewSet(viewsets.ModelViewSet):
+    queryset = Post.objects
+    serializer_class = DeviceSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
 

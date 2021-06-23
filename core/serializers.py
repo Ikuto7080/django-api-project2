@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
+from django.db.models import fields
 from rest_framework import serializers
-from core.models import Account, GooglePlace, Post, PostImage, Profile
+from core.models import Account, Device, GooglePlace, Post, PostImage, Profile, Device
 import uuid
 import facebook
 import requests
@@ -193,6 +194,11 @@ class CityStateSerializer(serializers.ModelSerializer):
         model = Post
         fields = ['id', 'city', 'state']
 
+class DeviceSerializer(serializers.ModelSerializer):
+    account = AccountSerializer
+    class Meta:
+        model = Device
+        fields = ['account', 'fcm_token']
 
 
 

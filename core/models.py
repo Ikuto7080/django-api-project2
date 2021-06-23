@@ -35,6 +35,11 @@ class Account(models.Model):
         return str(self.id)
 
 
+class Device(models.Model):
+    account = models.OneToOneField("Account", on_delete=models.CASCADE)
+    fcm_token = models.CharField(max_length=1000, null=True, blank=True)
+
+
 class GooglePlace(models.Model):
     info = models.JSONField(null=True, blank=True)
     place_id = models.CharField(max_length=1000)
