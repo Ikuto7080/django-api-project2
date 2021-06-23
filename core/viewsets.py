@@ -236,7 +236,7 @@ class CityStateViewSet(viewsets.ModelViewSet):
 
 
 class DeviceViewSet(viewsets.ModelViewSet):
-    queryset = Post.objects
+    queryset = Device.objects
     serializer_class = DeviceSerializer
     permission_classes = [permissions.IsAuthenticated]
 
