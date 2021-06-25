@@ -36,6 +36,7 @@ class AccountSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
     inviter = UserSerializer(source='inviter.user', read_only=True)
     redirect_uri = serializers.URLField(required=False, write_only=True)
+    
     class Meta:
         model = Account
         fields = ['id', 'user', 'fb_token' , 'ig_token', 'fb_code', 'ig_code', 'fb_id', 'ig_id', 'redirect_uri', 'profile_picture', 'account_id', 'follow_account_id', 'inviter']
