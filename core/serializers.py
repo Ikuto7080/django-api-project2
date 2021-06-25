@@ -7,7 +7,7 @@ import facebook
 import requests
 from instagram_basic_display.InstagramBasicDisplay import InstagramBasicDisplay
 from rest_framework.authtoken.models import Token
-from core.tasks import get_ig_post, get_fb_post
+from core.tasks import get_ig_post, get_fb_post, send_notification
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
