@@ -1,4 +1,3 @@
-from core.tests import send_notification
 from django.contrib.auth.models import User
 from django.db.models import fields
 from rest_framework import serializers
@@ -8,7 +7,7 @@ import facebook
 import requests
 from instagram_basic_display.InstagramBasicDisplay import InstagramBasicDisplay
 from rest_framework.authtoken.models import Token
-from core.tasks import get_ig_post, get_fb_post
+from core.tasks import get_ig_post, get_fb_post, send_notification
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -90,7 +89,6 @@ class AccountSerializer(serializers.ModelSerializer):
                 account.save()
                 get_fb_post.delay(account.id)
                 if follow_account_id:
-                    send_notification.delay(follow_account_id)
                     print('follo_account_id: ', follow_account_id)
                     follow_account = Account.objects.filter(id=follow_account_id).first()
                     print('follow_account: ', follow_account)
