@@ -1,6 +1,8 @@
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import messaging
+from celery import shared_task
+from core.models import Device
 
 firebase_admin_sdk = {
   "type": "service_account",
