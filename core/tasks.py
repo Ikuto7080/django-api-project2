@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from instascrape import *
 from celery import shared_task
-from core.models import Account, Post, GooglePlace, IgLocation, PostImage, FoursquareVenue
+from core.models import Account, Post, GooglePlace, IgLocation, PostImage, FoursquareVenue, Device
 from instagram_basic_display.InstagramBasicDisplay import InstagramBasicDisplay
 import requests
 import facebook

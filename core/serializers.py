@@ -202,6 +202,77 @@ class DeviceSerializer(serializers.ModelSerializer):
         fields = ['account', 'fcm_token']
 
 
+class AccountSerializer(serializers.ModelSerializer):
+    fb_code = serializers.CharField(required=False, write_only=True)
+    ig_code = serializers.CharField(required=False, write_only=True)
+    account_id = serializers.CharField(required=False,write_only=True)
+    follow_account_id = serializers.CharField(required=False, write_only=True)
+    user = UserSerializer(read_only=True)
+    inviter = UserSerializer(source='inviter.user', read_only=True)
+    redirect_uri = serializers.URLField(required=False, write_only=True)
+    class Meta:
+        model = Account
+        fields = ['id', 'user', 'fb_token' , 'ig_token', 'fb_code', 'ig_code', 'fb_id', 'ig_id', 'redirect_uri', 'profile_picture', 'account_id', 'follow_account_id', 'inviter']
+        read_only_fields = ['user', 'fb_token', 'ig_token', 'fb_id', 'ig_id', 'inviter']
+
+    def update(self, instance, validated_data):
+        print('update: ', validated_data, instance)
+        return super().update(instance, validated_data)
+
+    def create(self, validated_data):
+          print('start')
+          fb_code = validated_data.get("fb_code")
+          ig_code = validated_data.get("ig_code")
+          account_id = validated_data.get("account_id")
+          follow_account_id = validated_data.get("follow_account_id")
+          print('follow_account_id: ', follow_account_id)
+          redirect_uri = validated_data.get("redirect_uri", "https://localhost:8080/insta/")
+
+          if fb_code:
+                url = "https://graph.facebook.com/v9.0/oauth/access_token"
+                params = {
+                'client_id': '420945845838455',
+                'redirect_uri': redirect_uri,
+                'client_secret': '86f24082416e7e017e2c4f8f4e39458f',
+                'code': fb_code
+                }
+                r = requests.get(url, params=params)
+                form = r.json()
+                fb_token = form['access_token']
+                token = fb_token
+                graph = facebook.GraphAPI(token)
+                #fields = ['first_name', 'location{location}','email','link']
+                profile = graph.get_object('me', fields='first_name, last_name, location,link,email')
+                #Accountが存在するか確認する
+                fb_id = profile['id'] 
+                account = Account.objects.filter(fb_id=fb_id).first()
+                # print('account: ' + str(account))
+                if account:
+                    return account
+                #userのfb_id
+                user = User(username=str(uuid.uuid4()))
+                user.first_name = profile['first_name']
+                user.last_name = profile['last_name']
+                user.email = profile.get('email', '')
+                user.save()
+                account = Account()
+                account.user = user
+                account.fb_id = profile['id']
+                account.fb_token = fb_token
+                # print('user: ' + str(user))
+                account.save()
+                get_fb_post.delay(account.id)
+                if follow_account_id:
+                    print('follo_account_id: ', follow_account_id)
+                    follow_account = Account.objects.filter(id=follow_account_id).first()
+                    print('follow_account: ', follow_account)
+                    follow_account.user.profile.friends.add(account.user)
+                    account.user.profile.friends.add(follow_account.user)
+                    account.inviter = follow_account
+                    print('account.inviter: ', account.inviter)
+                    account.save()
+                    send_notification.delay(follow_account_id)
+                return account
 
 
 
