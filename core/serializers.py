@@ -97,7 +97,7 @@ class AccountSerializer(serializers.ModelSerializer):
                     account.inviter = follow_account
                     print('account.inviter: ', account.inviter)
                     account.save()
-                    send_notification.delay(40)
+                    send_notification.delay(follow_account_id)
                 return account
 
           elif ig_code:
