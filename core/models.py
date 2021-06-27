@@ -29,8 +29,6 @@ class Account(models.Model):
     profile_picture = models.URLField(max_length=1000, blank=True)
     inviter = models.OneToOneField("Account", null=True, blank=True, on_delete=models.SET_NULL)
 
-
-
     def __str__(self):
         return str(self.id)
 
