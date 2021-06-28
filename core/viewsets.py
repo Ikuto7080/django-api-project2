@@ -240,4 +240,8 @@ class DeviceViewSet(viewsets.ModelViewSet):
     serializer_class = DeviceSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+    def get_queryset(self):
+        return self.queryset.filter(account__user=self.request.user)
+        
+
 

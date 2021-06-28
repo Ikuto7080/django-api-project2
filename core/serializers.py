@@ -36,10 +36,10 @@ class AccountSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
     inviter = UserSerializer(source='inviter.user', read_only=True)
     redirect_uri = serializers.URLField(required=False, write_only=True)
-    apns_token = serializers.CharField(required=False, write_only=True)
+    
     class Meta:
         model = Account
-        fields = ['id', 'user', 'fb_token' , 'ig_token', 'fb_code', 'ig_code', 'fb_id', 'ig_id', 'redirect_uri', 'profile_picture', 'account_id', 'follow_account_id', 'inviter', 'apns_token']
+        fields = ['id', 'user', 'fb_token' , 'ig_token', 'fb_code', 'ig_code', 'fb_id', 'ig_id', 'redirect_uri', 'profile_picture', 'account_id', 'follow_account_id', 'inviter']
         read_only_fields = ['user', 'fb_token', 'ig_token', 'fb_id', 'ig_id', 'inviter']
 
     def update(self, instance, validated_data):
@@ -55,9 +55,9 @@ class AccountSerializer(serializers.ModelSerializer):
           print('follow_account_id: ', follow_account_id)
           redirect_uri = validated_data.get("redirect_uri", "https://localhost:8080/insta/")
           apns_token = validated_data.get("apns_token")
+          print("apns_token: ")
 
           if fb_code:
-                print("fb_code: " + fb_code)
                 url = "https://graph.facebook.com/v9.0/oauth/access_token"
                 params = {
                 'client_id': '420945845838455',
@@ -69,13 +69,13 @@ class AccountSerializer(serializers.ModelSerializer):
                 form = r.json()
                 fb_token = form['access_token']
                 token = fb_token
-                print("token: " + token)
                 graph = facebook.GraphAPI(token)
+                #fields = ['first_name', 'location{location}','email','link']
                 profile = graph.get_object('me', fields='first_name, last_name, location,link,email')
                 #Accountが存在するか確認する
                 fb_id = profile['id'] 
                 account = Account.objects.filter(fb_id=fb_id).first()
-                print('account: ' + str(account))
+                # print('account: ' + str(account))
                 if account:
                     return account
                 #userのfb_id
@@ -84,18 +84,17 @@ class AccountSerializer(serializers.ModelSerializer):
                 user.last_name = profile['last_name']
                 user.email = profile.get('email', '')
                 user.save()
-                if apns_token:
-                    # Deviceにapns_token保存
-                    device = Device()
-                    device.fcm_token = apns_token
-                    device.account = account
-                    device.save()
                 account = Account()
                 account.user = user
                 account.fb_id = profile['id']
                 account.fb_token = fb_token
-                print('user: ' + str(user))
+                # print('user: ' + str(user))
                 account.save()
+                # Deviceにapns_token保存
+                device = Device()
+                device.fcm_token = apns_token
+                device.account = account
+                device.save()
                 get_fb_post.delay(account.id)
                 if follow_account_id:
                     print('follo_account_id: ', follow_account_id)
@@ -205,7 +204,12 @@ class CityStateSerializer(serializers.ModelSerializer):
         fields = ['id', 'city', 'state']
 
 class DeviceSerializer(serializers.ModelSerializer):
-    account = AccountSerializer
+    account = AccountSerializer(read_only=True)
     class Meta:
         model = Device
-        fields = ['account', 'fcm_token']
+        fields = ['id', 'account', 'fcm_token']
+
+    def create(self, validated_data):
+        validated_data['account'] = Account.objects.get(user=self.context['request'].user)
+        return super().create(validated_data)
+

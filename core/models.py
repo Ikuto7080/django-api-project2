@@ -34,7 +34,7 @@ class Account(models.Model):
 
 
 class Device(models.Model):
-    account = models.OneToOneField("Account", on_delete=models.CASCADE)
+    account = models.ForeignKey("Account", on_delete=models.CASCADE)
     fcm_token = models.CharField(max_length=1000, unique=True)
 
 
