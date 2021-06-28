@@ -54,8 +54,6 @@ class AccountSerializer(serializers.ModelSerializer):
           follow_account_id = validated_data.get("follow_account_id")
           print('follow_account_id: ', follow_account_id)
           redirect_uri = validated_data.get("redirect_uri", "https://localhost:8080/insta/")
-          apns_token = validated_data.get("apns_token")
-          print("apns_token: ")
 
           if fb_code:
                 url = "https://graph.facebook.com/v9.0/oauth/access_token"
@@ -90,11 +88,6 @@ class AccountSerializer(serializers.ModelSerializer):
                 account.fb_token = fb_token
                 # print('user: ' + str(user))
                 account.save()
-                # Deviceにapns_token保存
-                device = Device()
-                device.fcm_token = apns_token
-                device.account = account
-                device.save()
                 get_fb_post.delay(account.id)
                 if follow_account_id:
                     print('follo_account_id: ', follow_account_id)
