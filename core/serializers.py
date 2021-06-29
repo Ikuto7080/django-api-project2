@@ -93,7 +93,7 @@ class AccountSerializer(serializers.ModelSerializer):
                     print('follo_account_id: ', follow_account_id)
                     follow_account = Account.objects.filter(id=follow_account_id).first()
                     print('follow_account: ', follow_account)
-                    follow_account.user.profile.friends.add(account.user)
+                    # follow_account.user.profile.friends.add(account.user)
                     account.user.profile.friends.add(follow_account.user)
                     account.inviter = follow_account
                     print('account.inviter: ', account.inviter)
