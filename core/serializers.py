@@ -198,7 +198,7 @@ class GooglePlaceSerializer(serializers.ModelSerializer):
 class PostImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = PostImage
-        fields = ['id', 'url']
+        fields = ['id', 'url', 'image']
 
 
 
