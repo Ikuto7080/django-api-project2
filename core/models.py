@@ -95,12 +95,49 @@ class Post(models.Model):
                 mylist_distance.append(category_locations)
                 mylist_category.append(category_name)
             near_distance = min(mylist_distance)
+            ChineseRestaurant = ["Chinese Restaurant", "Anhui Restaurant","Beijing Restaurant","Cantonese Restaurant","Cha Chaan Teng","Chinese Aristocrat Restaurant","Chinese Breakfast Place","Dim Sum Restaurant","Dongbei Restaurant","Fujian Restaurant","Guizhou Restaurant","Hainan Restaurant","Hakka Restaurant","Henan Restaurant","Hong Kong Restaurant","Huaiyang Restaurant","Hubei Restaurant","Hunan Restaurant","Imperial Restaurant","Jiangsu Restaurant","Jiangxi Restaurant","Macanese Restaurant","Manchu Restaurant","Peking Duck Restaurant","Shaanxi Restaurant","Shandong Restaurant","Shanghai Restaurant","Shanxi Restaurant","Szechuan Restaurant","Taiwanese Restaurant","Tianjin Restaurant","Xinjiang Restaurant","Yunnan Restaurant","Zhejiang Restaurant"]
+            IndonesianRestaurant = ["Indonesian Restaurant","Acehnese Restaurant","Balinese Restaurant","Betawinese Restaurant","Indonesian Meatball Place","Javanese Restaurant","Manadonese Restaurant","Padangnese Restaurant","Sundanese Restaurant"]
+            JapaneseRestaurant = ["Japanese Restaurant","Donburi Restaurant","Japanese Curry Restaurant","Kaiseki Restaurant","Kushikatsu Restaurant","Monjayaki Restaurant","Nabe Restaurant","Okonomiyaki Restaurant","Ramen Restaurant","Shabu-Shabu Restaurant","Soba Restaurant","Sukiyaki Restaurant","Sushi Restaurant","Takoyaki Place","Tempura Restaurant","Tonkatsu Restaurant","Udon Restaurant","Unagi Restaurant","Wagashi Place","Yakitori Restaurant","Yoshoku Restaurant"]
+            KoreanRestaurant = ["Korean Restaurant","Bossam/Jokbal Restaurant","Bunsik Restaurant","Gukbap Restaurant","Janguh Restaurant","Samgyetang Restaurant"]
+            MalayRestaurant = ["Malay Restaurant","Mamak Restaurant"]
+            DessertShop = ["Dessert Shop","Cupcake Shop","Frozen Yogurt Shop","Ice Cream Shop","Pastry Shop","Pie Shop"]
+            FrenchRestaurant = ["French Restaurant","Alsatian Restaurant","Auvergne Restaurant","Basque Restaurant","Brasserie","Breton Restaurant","Burgundian Restaurant","Catalan Restaurant","Ch'ti Restaurant","Corsican Restaurant","Estaminet","Labour Canteen","Labour Canteen","Lyonese Bouchon","Norman Restaurant","Norman Restaurant","Provençal Restaurant","Savoyard Restaurant","Southwestern French Restaurant"]
+            ItalianRestaurant = ["Italian Restaurant","Abruzzo Restaurant","Agriturismo","Aosta Restaurant","Basilicata Restaurant","Calabria Restaurant","Campanian Restaurant","Emilia Restaurant","Friuli Restaurant","Ligurian Restaurant","Lombard Restaurant","Malga,Marche Restaurant","Molise Restaurant","Piadineria","Piedmontese Restaurant","Puglia Restaurant","Romagna Restaurant","Roman Restaurant","Sardinian Restaurant","Sicilian Restaurant","South Tyrolean Restaurant","Trattoria/Osteria","Trentino Restaurant","Tuscan Restaurant","Umbrian Restaurant","Veneto Restaurant"]
+            Bar =["Bar","Beach Bar","Beer Bar","Beer Garden","Champagne Bar","Cocktail Bar","Dive Bar","Gay Bar","Hookah Bar","Hotel Bar","Karaoke Bar","Pub","Sake Bar","Speakeasy","Sports Bar","Tiki Bar","Whisky Bar","Wine Bar"]
             for i in mylist_category:
                 if near_distance is i['location']['distance']:
                     matched_venue = i
                     for restaurants in i['categories']:
-                        restaurant_category = restaurants['name']  
-                        self.categories = restaurant_category
+                        if restaurants['name'] in ChineseRestaurant:
+                            restaurant_category = "Chinese Restaurant"
+                        elif restaurants['name'] in IndonesianRestaurant:
+                            restaurant_category = "Indonesian Restaurant"
+                        elif restaurants['name'] in JapaneseRestaurant:
+                            restaurant_category = "Japanese Restaurant"
+                        elif restaurants['name'] in KoreanRestaurant:
+                            restaurant_category = "Korean Restaurant"
+                        elif restaurants['name'] in MalayRestaurant:
+                            restaurant_category = "Malay Restaurant"
+                        elif restaurants['name'] in DessertShop:
+                            restaurant_category = "Dessert Shop"
+                        elif restaurants['name'] in FrenchRestaurant:
+                            restaurant_category = "French Restaurant"
+                        elif restaurants['name'] in ItalianRestaurant:
+                            restaurant_category = "Italian Restaurant"
+                        elif restaurants['name'] in Bar:
+                            restaurant_category = "Bar"   
+                        elif restaurants['name'] in ['BBQ Joint']:
+                            restaurant_category = "BBQ Joint"  
+                        elif restaurants['name'] in ['Bakery']:
+                            restaurant_category = "Bakery"
+                        elif restaurants['name'] in ['Café']:
+                            restaurant_category = "Café"
+                        elif restaurants['name'] in ['Tea Room']:
+                            restaurant_category = "Tea Room"
+                        else:
+                            restaurant_category = "Others"  
+                        # restaurant_category = restaurants['name']  
+                self.categories = restaurant_category
         try:
             state = matched_venue['location']['state']
             city = matched_venue['location']['city']
