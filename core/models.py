@@ -26,7 +26,7 @@ class Account(models.Model):
     fb_id = models.CharField(max_length=30, unique=True, null=True, blank=True)
     ig_id = models.CharField(max_length=30, null=True, blank=True)
     #line_user_id = models.CharField(max_length=100, null=True)
-    profile_picture = models.URLField(max_length=1000, null=True, blank=True)
+    profile_picture = models.URLField(max_length=1000, blank=True)
     inviter = models.OneToOneField("Account", null=True, blank=True, on_delete=models.SET_NULL)
     postkit_url = models.URLField(max_length=1000, null=True, blank=True)
 
