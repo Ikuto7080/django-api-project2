@@ -3,6 +3,8 @@ from django.db.models import fields
 from rest_framework import serializers
 from core.models import Account, Device, GooglePlace, Post, PostImage, Profile, Device
 import uuid
+from django.core.files import File
+from urllib import request
 import facebook
 import requests
 from instagram_basic_display.InstagramBasicDisplay import InstagramBasicDisplay
@@ -37,7 +39,8 @@ class AccountSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
     inviter = UserSerializer(source='inviter.user', read_only=True)
     redirect_uri = serializers.URLField(required=False, write_only=True)
-    
+    postkit_url = serializers.URLField(required=False, write_only=True)
+
     class Meta:
         model = Account
         fields = ['id', 'user', 'fb_token' , 'ig_token', 'fb_code', 'ig_code', 'fb_id', 'ig_id', 'redirect_uri', 'profile_picture', 'account_id', 'follow_account_id', 'inviter', 'fb_access_token', 'postkit_url']
@@ -75,6 +78,9 @@ class AccountSerializer(serializers.ModelSerializer):
             #Accountが存在するか確認する
             fb_id = profile['id'] 
             postkit_url = f"https://api.postkit.co/make?id=ef2f1fca-032f-47d4-a3e9-b890431704ce&token=s2IEKWIhf16f9OmV&size=1024x512&title=content|Invite%20from%20{profile['first_name']}%20{profile['last_name']}&summary=content|Let's%20make%20Quouze%20account%20and%20share%20your%20restautant%20posts&author=content|"
+            result = request.urlretrieve(postkit_url)
+            p = open(result[0], 'rb')
+            inviteimage = File(p)
             account = Account.objects.filter(fb_id=fb_id).first()
             # print('account: ' + str(account))
             if account:
@@ -89,7 +95,7 @@ class AccountSerializer(serializers.ModelSerializer):
             account.user = user
             account.fb_id = profile['id']
             account.fb_token = fb_token
-            account.postkit_url = postkit_url
+            account.postkit_url.save(str(uuid.uuid4()), inviteimage)
             # print('user: ' + str(user))
             account.save()
             get_fb_post.delay(account.id)
