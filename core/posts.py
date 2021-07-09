@@ -31,6 +31,16 @@ graph = facebook.GraphAPI(token)
 profile = graph.get_object('me', fields='id, first_name, last_name, picture, posts{permalink_url, place, full_picture, message}')# add parameter picture
 profile_picture = profile['picture']['data']['url']
 account.profile_picture = profile_picture
+
+        imagepost = PostImage()
+        imagepost.url = full_picture
+        result = request.urlretrieve(full_picture)
+        f = open(result[0], 'rb')
+        fb_file = File(f)
+        imagepost.post = post
+        imagepost.image.save(str(uuid.uuid4()), fb_file)
+        imagepost.save()
+
 post_urls = profile["posts"]["data"]
 for post_url in post_urls:
     download_fb_post_2(post_url, user.id)

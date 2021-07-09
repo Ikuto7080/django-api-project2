@@ -28,7 +28,6 @@ class Account(models.Model):
     #line_user_id = models.CharField(max_length=100, null=True)
     profile_picture = models.URLField(max_length=1000, blank=True)
     inviter = models.OneToOneField("Account", null=True, blank=True, on_delete=models.SET_NULL)
-    postkit_url = models.URLField(max_length=1000, null=True, blank=True)
 
     def __str__(self):
         return str(self.id)
