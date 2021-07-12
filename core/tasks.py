@@ -183,11 +183,11 @@ def get_fb_post(account_id):
     graph = facebook.GraphAPI(token)
     profile = graph.get_object('me', fields='first_name, last_name, picture, posts{permalink_url, place, full_picture, message,created_time}')# add parameter picture
     picture_url = profile['picture']['data']['url']
-    # result = request.urlretrieve(picture_url)
-    # p = open(result[0], 'rb')
-    # profile_picture = File(p)
-    # account.profile_picture.save(str(uuid.uuid4()), profile_picture)
-    account.profile_picture = picture_url
+    result = request.urlretrieve(picture_url)
+    p = open(result[0], 'rb')
+    profile_picture = File(p)
+    account.profile_picture.save(str(uuid.uuid4()), profile_picture)
+    # account.profile_picture = picture_url
     account.save()
     post_urls = profile["posts"]["data"]
     for post_url in post_urls:
