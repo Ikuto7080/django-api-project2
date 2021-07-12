@@ -26,15 +26,9 @@ class Account(models.Model):
     fb_id = models.CharField(max_length=30, unique=True, null=True, blank=True)
     ig_id = models.CharField(max_length=30, null=True, blank=True)
     #line_user_id = models.CharField(max_length=100, null=True)
-<<<<<<< HEAD
     profile_picture = models.ImageField(null=True, blank=True, upload_to='profilepic/')
     inviter = models.OneToOneField("Account", null=True, blank=True, on_delete=models.SET_NULL)
     postkit_url = models.ImageField(null=True, blank=True, upload_to='invitepicture/')
-=======
-    profile_picture = models.URLField(max_length=1000, blank=True)
-    inviter = models.OneToOneField("Account", null=True, blank=True, on_delete=models.SET_NULL)
-    postkit_url = models.URLField(max_length=1000, null=True, blank=True)
->>>>>>> cb0a11f16b3bd473e2e75f4fdc2f5538b6b6b3c8
 
     def __str__(self):
         return str(self.id)
