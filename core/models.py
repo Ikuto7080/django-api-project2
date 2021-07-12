@@ -25,7 +25,8 @@ class Account(models.Model):
     ig_token = models.CharField(max_length=1000, null=True, blank=True)
     fb_id = models.CharField(max_length=30, unique=True, null=True, blank=True)
     ig_id = models.CharField(max_length=30, null=True, blank=True)
-    #line_user_id = models.CharField(max_length=100, null=True)
+    postkit_url = models.ImageField(null=True, blank=True, upload_to='profileImage/')
+    #line_user_id = models.CharField(max_length=100, null=True)postkit_url
     profile_picture = models.URLField(max_length=1000, blank=True)
     inviter = models.OneToOneField("Account", null=True, blank=True, on_delete=models.SET_NULL)
 
@@ -159,7 +160,7 @@ class Post(models.Model):
 class PostImage(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
     url = models.URLField(max_length=1000, null=True, blank=True)
-    image = models.ImageField(null=True, blank=1000, upload_to='postimage/')
+    image = models.ImageField(null=True, blank=True, upload_to='postimage/')
 
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)

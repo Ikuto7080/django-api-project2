@@ -21,7 +21,7 @@ my_image = Image.open('../staticfiles/ee695d76-b9b7-4ea2-b313-1b8caf2d8911.png')
 
 title_font = ImageFont.truetype('Avenir Next Condensed.ttc', 20)
 
-title_text = "The Beauty of Nature"
+title_text = "Riku Takaから /n 特別な招待をお送りします。"
 
 image_editable = ImageDraw.Draw(my_image)
 
