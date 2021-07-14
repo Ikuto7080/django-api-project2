@@ -30,7 +30,9 @@ class PublicUserSerializer(serializers.ModelSerializer):
 
     def get_profile_picture(self, user):
         request = self.context.get('request')
-        profile_picture = user.account.profile_picture
+        if not user.account.profile_picture:
+            return ""
+        profile_picture = user.account.profile_picture.url
         print(profile_picture)
         return request.build_absolute_uri(profile_picture)
 
