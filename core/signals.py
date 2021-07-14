@@ -10,9 +10,9 @@ def post_save_create_profile(sender, instance, created, **kwargs):
         Profile.objects.create(user=instance)
 
 
-@receiver(pre_delete, sender=Account)
-def pre_delete_account(sender, instance, **kwargs):
-    user = User.objects.get(id=instance.user_id)
-    user.delete()
+# @receiver(pre_delete, sender=Account)
+# def pre_delete_account(sender, instance, **kwargs):
+#     user = User.objects.get(id=instance.user_id)
+#     user.delete()
 
 
