@@ -35,6 +35,7 @@ class AccountSerializer(serializers.ModelSerializer):
     fb_access_token = serializers.CharField(required=False, write_only=True)
     ig_code = serializers.CharField(required=False, write_only=True)
     account_id = serializers.CharField(required=False,write_only=True)
+    profile_picture = serializers.URLField(required=False, write_only=True)
     follow_account_id = serializers.CharField(required=False, write_only=True)
     user = UserSerializer(read_only=True)
     inviter = UserSerializer(source='inviter.user', read_only=True)
