@@ -19,7 +19,12 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         fields = ['id', 'url', 'first_name', 'last_name', 'email', 'is_staff', 'profile_picture']
 
     def get_profile_picture(self, user):
-        return "hoge"
+        request = self.context.get('request')
+        if not user.account.profile_picture:
+            return ""
+        profile_picture = user.account.profile_picture.url
+        print(profile_picture)
+        return request.build_absolute_uri(profile_picture)
 
 
 class PublicUserSerializer(serializers.ModelSerializer):
