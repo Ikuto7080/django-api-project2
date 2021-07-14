@@ -13,16 +13,30 @@ from core.tasks import get_ig_post, get_fb_post, send_notification
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
-    profile_picture = serializers.CharField(source='account.profile_picture')
+    profile_picture = serializers.SerializerMethodField()
     class Meta:
         model = User
         fields = ['id', 'url', 'first_name', 'last_name', 'email', 'is_staff', 'profile_picture']
 
+    def get_profile_picture(self, user):
+        return "hoge"
+
+
 class PublicUserSerializer(serializers.ModelSerializer):
-    profile_picture = serializers.CharField(source='account.profile_picture')
+    profile_picture = serializers.SerializerMethodField()
     class Meta:
         model = User
         fields = ['id', 'first_name', 'last_name', 'profile_picture']
+
+    def get_profile_picture(self, user):
+        request = self.context.get('request')
+        profile_picture = user.account.profile_picture
+        print(profile_picture)
+        return request.build_absolute_uri(profile_picture)
+
+        # request = self.context.get('request')
+        # photo_url = car.photo.url
+        # return request.build_absolute_uri(photo_url)
 
 class InviterAccountSerializer(serializers.ModelSerializer):
     inviter = UserSerializer(source='account.inviter.user')
@@ -35,7 +49,6 @@ class AccountSerializer(serializers.ModelSerializer):
     fb_access_token = serializers.CharField(required=False, write_only=True)
     ig_code = serializers.CharField(required=False, write_only=True)
     account_id = serializers.CharField(required=False,write_only=True)
-    profile_picture = serializers.URLField(required=False, write_only=True)
     follow_account_id = serializers.CharField(required=False, write_only=True)
     user = UserSerializer(read_only=True)
     inviter = UserSerializer(source='inviter.user', read_only=True)
