@@ -18,28 +18,31 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         model = User
         fields = ['id', 'url', 'first_name', 'last_name', 'email', 'is_staff', 'profile_picture']
 
-    # def get_profile_picture(self, user):
-    #     request = self.context.get('request')
-    #     if not user.account.profile_picture:
-    #         return ""
-    #     profile_picture = user.account.profile_picture.url
-    #     return request.build_absolute_uri(profile_picture)
+    def get_profile_picture(self, user):
+        request = self.context.get('request')
 
-    def get_followings_count(self, obj):
-        print(obj.get_followings())
-        return obj.get_followings().count()
+        if not hasattr(user, 'account'):
+            return ""
+        if not user.account.profile_picture:
+            return ""
+        profile_picture = user.account.profile_picture.url
+        return request.build_absolute_uri(profile_picture)
 
-    def get_followers_count(self, obj):
-        print(obj.get_followers())
-        return obj.get_followers().count()
+    # def get_followings_count(self, obj):
+    #     print(obj.get_followings())
+    #     return obj.get_followings().count()
 
-    def get_is_following(self, obj):
-        user = self.context['request'].user
+    # def get_followers_count(self, obj):
+    #     print(obj.get_followers())
+    #     return obj.get_followers().count()
 
-        if user.is_authenticated:
-            return obj in user.get_followings()
-        else:
-            return False
+    # def get_is_following(self, obj):
+    #     user = self.context['request'].user
+
+    #     if user.is_authenticated:
+    #         return obj in user.get_followings()
+    #     else:
+    #         return False
 
 
 
@@ -49,29 +52,31 @@ class PublicUserSerializer(serializers.ModelSerializer):
         model = User
         fields = ['id', 'first_name', 'last_name', 'profile_picture']
 
-    # def get_profile_picture(self, user):
-    #     request = self.context.get('request')
-    #     if not user.account.profile_picture:
-    #         return ""
-    #     profile_picture = user.account.profile_picture.url
-    #     print(profile_picture)
-    #     return request.build_absolute_uri(profile_picture)
+    def get_profile_picture(self, user):
+        request = self.context.get('request')
+        if not hasattr(user, 'account'):
+            return ""
+        if not user.account.profile_picture:
+            return ""
+        profile_picture = user.account.profile_picture.url
+        print(profile_picture)
+        return request.build_absolute_uri(profile_picture)
 
-    def get_followings_count(self, obj):
-        print(obj.get_followings())
-        return obj.get_followings().count()
+    # def get_followings_count(self, obj):
+    #     print(obj.get_followings())
+    #     return obj.get_followings().count()
 
-    def get_followers_count(self, obj):
-        print(obj.get_followers())
-        return obj.get_followers().count()
+    # def get_followers_count(self, obj):
+    #     print(obj.get_followers())
+    #     return obj.get_followers().count()
 
-    def get_is_following(self, obj):
-        user = self.context['request'].user
+    # def get_is_following(self, obj):
+    #     user = self.context['request'].user
 
-        if user.is_authenticated:
-            return obj in user.get_followings()
-        else:
-            return False
+    #     if user.is_authenticated:
+    #         return obj in user.get_followings()
+    #     else:
+    #         return False
 
 class InviterAccountSerializer(serializers.ModelSerializer):
     inviter = UserSerializer(source='account.inviter.user')
