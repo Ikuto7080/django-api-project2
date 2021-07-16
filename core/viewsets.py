@@ -12,10 +12,13 @@ class MyPagenation(pagination.PageNumberPagination):
     max_page_size = 100
 
 
+
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+
 
 
 class ProfileViewSet(viewsets.ModelViewSet):

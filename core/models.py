@@ -7,6 +7,14 @@ from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
 
 
+class Connection(models.Model):
+    following = models.ForeignKey(User, related_name='following', on_delete=models.CASCADE)
+    followers = models.ForeignKey(User, related_name='followers', on_delete=models.CASCADE)
+    follow_time = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return "{} : {}".format(self.follower.username, self.following.username)
+
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     boi = models.TextField(default='no bio...', blank=True, null=True)
