@@ -1,5 +1,5 @@
 from django.contrib import admin
-from core.models import Account, GooglePlace, IgLocation, Post, PostImage, Profile, FoursquareVenue, Device
+from core.models import Account, GooglePlace, IgLocation, Post, PostImage, Profile, FoursquareVenue, Device, Connection
 
 
 class AccountAdmin(admin.ModelAdmin):
@@ -8,6 +8,7 @@ class AccountAdmin(admin.ModelAdmin):
 
 admin.site.register(Account, AccountAdmin)
 admin.site.register(GooglePlace)
+admin.site.register(Connection)
 admin.site.register(IgLocation)
 admin.site.register(Post)
 admin.site.register(PostImage)

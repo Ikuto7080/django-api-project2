@@ -8,12 +8,13 @@ from rest_framework.authtoken.models import Token
 
 
 class Connection(models.Model):
-    following = models.ForeignKey(User, related_name='following', on_delete=models.CASCADE)
-    followers = models.ForeignKey(User, related_name='followers', on_delete=models.CASCADE)
+    user = models.OneToOneField(User, blank=True, on_delete=models.CASCADE)
+    followings = models.ManyToManyField(User, related_name='followers', blank=True)
+    fb_friends = models.ManyToManyField(User, related_name='fb_friends', blank=True)
     follow_time = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return "{} : {}".format(self.follower.username, self.following.username)
+        return "{}".format(self.user.id)
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)

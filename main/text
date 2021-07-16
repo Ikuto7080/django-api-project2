@@ -1,0 +1,3 @@
+method:post
+url: users/31/follow/
+body:user

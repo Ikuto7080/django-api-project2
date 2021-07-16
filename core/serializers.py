@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from django.db.models import fields
 from rest_framework import serializers
-from core.models import Account, Device, GooglePlace, Post, PostImage, Profile, Device
+from core.models import Account, Device, GooglePlace, Post, PostImage, Profile, Device, Connection
 import uuid
 from django.core.files import File
 from urllib import request
@@ -77,6 +77,14 @@ class PublicUserSerializer(serializers.ModelSerializer):
     #         return obj in user.get_followings()
     #     else:
     #         return False
+
+class ConnectionSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+    follow_user = UserSerializer(read_only=True)
+    class Meta:
+        model = Connection
+        fields = ['id', 'user', 'follow_user', 'follow_time']
+
 
 class InviterAccountSerializer(serializers.ModelSerializer):
     inviter = UserSerializer(source='account.inviter.user')

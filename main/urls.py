@@ -7,7 +7,7 @@ from django.conf.urls.static import static
 
 
 from rest_framework import routers
-from core.viewsets import UserViewSet, AccountViewSet, GooglePlaceViewSet, PostViewSet, ProfileViewSet, FeedViewSet, FollowingsViewSet, FollowersViewSet, CategoriesViewSet, CityStateViewSet, DeviceViewSet
+from core.viewsets import UserViewSet, AccountViewSet, GooglePlaceViewSet, PostViewSet, ProfileViewSet, FeedViewSet, FollowingsViewSet, FollowersViewSet, CategoriesViewSet, CityStateViewSet, DeviceViewSet, ConnectionViewSet
 
 from core.filters import ProfileList
 from core.views import LineWebHookView
@@ -15,6 +15,7 @@ from django.urls import path, include
 
 
 router = routers.DefaultRouter()
+router.register(r'connections', ConnectionViewSet)
 router.register(r'users', UserViewSet)
 router.register(r'accounts', AccountViewSet)
 router.register(r'restaurants', GooglePlaceViewSet)

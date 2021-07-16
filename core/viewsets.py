@@ -1,8 +1,8 @@
 from django.contrib.auth.models import User
 from rest_framework import viewsets, permissions, response, pagination
 from rest_framework.permissions import AllowAny
-from core.serializers import UserSerializer, AccountSerializer, GooglePlaceSerializer, PostSerializer, ProfileSerializer, CategoriesSerializer, CityStateSerializer, PublicAccountSerializer, PublicPostSerializer, DeviceSerializer
-from core.models import Account, GooglePlace, Post, Profile, Device
+from core.serializers import UserSerializer, AccountSerializer, GooglePlaceSerializer, PostSerializer, ProfileSerializer, CategoriesSerializer, CityStateSerializer, PublicAccountSerializer, PublicPostSerializer, DeviceSerializer, ConnectionSerializer
+from core.models import Account, GooglePlace, Post, Profile, Device, Connection
 from django.db.models import Q
 from rest_framework.decorators import action
 
@@ -11,7 +11,10 @@ class MyPagenation(pagination.PageNumberPagination):
     page_size_query_param = 'page_size'
     max_page_size = 100
 
-
+class ConnectionViewSet(viewsets.ModelViewSet):
+    queryset = Connection.objects.all()
+    serializer_class = ConnectionSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
