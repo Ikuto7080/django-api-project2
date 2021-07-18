@@ -138,13 +138,8 @@ class AccountSerializer(serializers.ModelSerializer):
             #fields = ['first_name', 'location{location}','email','link']
             profile = graph.get_object('me', fields='first_name, last_name, location,link,email')
             #Accountが存在するか確認する
-            fb_id = profile['id'] 
-            # postkit_url = f"https://api.postkit.co/make?id=ef2f1fca-032f-47d4-a3e9-b890431704ce&token=s2IEKWIhf16f9OmV&size=1024x512&title=content|Invite%20from%20{profile['first_name']}%20{profile['last_name']}&summary=content|Let's%20make%20Quouze%20account%20and%20share%20your%20restautant%20posts&author=content|"
-            # result = request.urlretrieve(postkit_url)
-            # p = open(result[0], 'rb')
-            # inviteimage = File(p)
+            fb_id = profile['id']
             account = Account.objects.filter(fb_id=fb_id).first()
-            
             if account:
                 return account
             #userのfb_id
@@ -157,19 +152,28 @@ class AccountSerializer(serializers.ModelSerializer):
             account.user = user
             account.fb_id = profile['id']
             account.fb_token = fb_token
-            # account.postkit_url.save(str(uuid.uuid4()), inviteimage)
-            # account.postkit_url = postkit_url
             account.save()
             get_fb_post.delay(account.id)
             if follow_account_id:
-                print('follo_account_id: ', follow_account_id)
                 follow_account = Account.objects.filter(id=follow_account_id).first()
-                print('follow_account: ', follow_account)
                 follow_account.user.profile.friends.add(account.user)
                 account.user.profile.friends.add(follow_account.user)
                 account.inviter = follow_account
-                print('account.inviter: ', account.inviter)
                 account.save()
+                is_fb_friend = graph.get_object("me/friends/" + str(follow_account.fb_id))
+                print(is_fb_friend)
+                try:
+                    friends = is_fb_friend["data"][0]
+                    connection = Connection()
+                    connection.user = user
+                    user.connection.fb_friends.add(follow_account.user)
+                    follow_connection = Connection()
+                    follow_account.user.connection = follow_connection
+                    follow_account.user.connection.fb_friends.add(user)
+                    connection.save()
+                    follow_connection.save()
+                except:
+                    return ""
                 send_notification.delay(account.id, follow_account_id)
             return account
 
@@ -199,13 +203,11 @@ class AccountSerializer(serializers.ModelSerializer):
                 account.save()
                 get_fb_post.delay(account.id)
                 if follow_account_id:
-                    print('follo_account_id: ', follow_account_id)
+                    # this account invite you
                     follow_account = Account.objects.filter(id=follow_account_id).first()
-                    print('follow_account: ', follow_account)
                     follow_account.user.profile.friends.add(account.user)
                     account.user.profile.friends.add(follow_account.user)
                     account.inviter = follow_account
-                    print('account.inviter: ', account.inviter)
                     account.save()
                     send_notification.delay(account.id, follow_account_id)
                 return account
