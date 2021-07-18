@@ -148,6 +148,9 @@ class AccountSerializer(serializers.ModelSerializer):
             user.last_name = profile['last_name']
             user.email = profile.get('email', '')
             user.save()
+            connection = Connection()
+            connection.user = user
+            connection.save()
             account = Account()
             account.user = user
             account.fb_id = profile['id']
@@ -164,14 +167,8 @@ class AccountSerializer(serializers.ModelSerializer):
                 print(is_fb_friend)
                 try:
                     friends = is_fb_friend["data"][0]
-                    connection = Connection()
-                    connection.user = user
                     user.connection.fb_friends.add(follow_account.user)
-                    follow_connection = Connection()
-                    follow_account.user.connection = follow_connection
                     follow_account.user.connection.fb_friends.add(user)
-                    connection.save()
-                    follow_connection.save()
                 except:
                     return ""
                 send_notification.delay(account.id, follow_account_id)
