@@ -16,6 +16,25 @@ class ConnectionViewSet(viewsets.ModelViewSet):
     serializer_class = ConnectionSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+    def get_queryset(self):
+        queryset = self.queryset
+        return queryset.filter(user=self.request.user)
+
+    def get_serializer_class(self):
+        if self.request.method == 'POST':
+            return ConnectionSerializer
+        return ConnectionSerializer
+
+    @action(detail=True, methods=['post'])
+    def follow_unfollow(self, request, pk=None):
+        data=request.data
+        serializer = self.get_serializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return response.Response({"status": "success follow_unfollow user"})
+        return response.Response('status: Ok')
+
+
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
@@ -86,7 +105,6 @@ class PostViewSet(viewsets.ModelViewSet):
              queryset = self.queryset.filter(google_place=google_place)
         return queryset
 
-
 class FeedViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
@@ -139,7 +157,6 @@ class FeedViewSet(viewsets.ModelViewSet):
         if self.request.user.is_authenticated:
             queryset = queryset.filter(Q(user=self.request.user) | Q(user__in=self.request.user.profile.friends.all()))
         return queryset
-
 
 class FollowingsViewSet(viewsets.ModelViewSet):
     queryset = Profile.objects.all()

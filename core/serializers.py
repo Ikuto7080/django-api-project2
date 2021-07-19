@@ -28,22 +28,6 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         profile_picture = user.account.profile_picture.url
         return request.build_absolute_uri(profile_picture)
 
-    # def get_followings_count(self, obj):
-    #     print(obj.get_followings())
-    #     return obj.get_followings().count()
-
-    # def get_followers_count(self, obj):
-    #     print(obj.get_followers())
-    #     return obj.get_followers().count()
-
-    # def get_is_following(self, obj):
-    #     user = self.context['request'].user
-
-    #     if user.is_authenticated:
-    #         return obj in user.get_followings()
-    #     else:
-    #         return False
-
 
 
 class PublicUserSerializer(serializers.ModelSerializer):
@@ -62,28 +46,34 @@ class PublicUserSerializer(serializers.ModelSerializer):
         print(profile_picture)
         return request.build_absolute_uri(profile_picture)
 
-    # def get_followings_count(self, obj):
-    #     print(obj.get_followings())
-    #     return obj.get_followings().count()
-
-    # def get_followers_count(self, obj):
-    #     print(obj.get_followers())
-    #     return obj.get_followers().count()
-
-    # def get_is_following(self, obj):
-    #     user = self.context['request'].user
-
-    #     if user.is_authenticated:
-    #         return obj in user.get_followings()
-    #     else:
-    #         return False
 
 class ConnectionSerializer(serializers.ModelSerializer):
+    my_user_id = serializers.CharField(required=False, write_only=True)
+    follow_user_id = serializers.CharField(required=False, write_only=True)
+    unfollow_user_id = serializers.CharField(required=False, write_only=True)
     user = UserSerializer(read_only=True)
-    follow_user = UserSerializer(read_only=True)
+    followings = UserSerializer(many=True, read_only=True)
+    fb_friends = UserSerializer(many=True, read_only=True)
     class Meta:
         model = Connection
-        fields = ['id', 'user', 'follow_user', 'follow_time']
+        fields = ['id', 'my_user_id', 'follow_user_id' ,'unfollow_user_id' ,'user', 'followings', 'fb_friends','follow_time']
+
+    def create(self, validated_data):
+        my_user_id = validated_data.get("my_user_id")
+        follow_user_id = validated_data.get("follow_user_id")
+        unfollow_user_id = validated_data.get("unfollow_user_id")
+        if follow_user_id:
+            my_user = User.objects.filter(id=my_user_id).first()
+            follow_user = User.objects.filter(id=follow_user_id).first()
+            my_user.connection.followings.add(follow_user)
+            return {my_user, "=> ", follow_user}
+
+        elif unfollow_user_id:
+            print("unfollow user id", unfollow_user_id)
+            my_user = User.objects.filter(id=my_user_id).first()
+            unfollow_user = User.objects.filter(id=unfollow_user_id).first()
+            my_user.connection.followings.remove(unfollow_user)
+            return {my_user, "=> ", unfollow_user}
 
 
 class InviterAccountSerializer(serializers.ModelSerializer):
@@ -158,15 +148,17 @@ class AccountSerializer(serializers.ModelSerializer):
             account.save()
             get_fb_post.delay(account.id)
             if follow_account_id:
+                print("follow_account_id: ", follow_account_id)
                 follow_account = Account.objects.filter(id=follow_account_id).first()
                 follow_account.user.profile.friends.add(account.user)
                 account.user.profile.friends.add(follow_account.user)
                 account.inviter = follow_account
                 account.save()
                 is_fb_friend = graph.get_object("me/friends/" + str(follow_account.fb_id))
-                print(is_fb_friend)
+                print("is_fb_friend:  ", is_fb_friend)
                 try:
                     friends = is_fb_friend["data"][0]
+                    print(friends)
                     user.connection.fb_friends.add(follow_account.user)
                     follow_account.user.connection.fb_friends.add(user)
                 except:
@@ -222,7 +214,6 @@ class AccountSerializer(serializers.ModelSerializer):
             account.save()
             # get_ig_post(account.id)
             return account
-                
         else:
             raise serializers.ValidationError('Be specify fb_token or ig_token')
 
