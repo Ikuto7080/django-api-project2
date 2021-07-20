@@ -7,25 +7,22 @@ from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
 
 
-class Connection(models.Model):
-    user = models.OneToOneField(User, blank=True, on_delete=models.CASCADE)
-    followings = models.ManyToManyField(User, related_name='followers', blank=True)
-    fb_friends = models.ManyToManyField(User, related_name='fb_friends', blank=True)
-    follow_time = models.DateTimeField(auto_now=True)
+# class Connection(models.Model):
+#     user = models.OneToOneField(User, blank=True, on_delete=models.CASCADE)
+#     followings = models.ManyToManyField(User, related_name='followers', blank=True)
+#     fb_friends = models.ManyToManyField(User, related_name='fb_friends', blank=True)
+#     follow_time = models.DateTimeField(auto_now=True)
 
-    def __str__(self):
-        return "{}".format(self.user.id)
+#     def __str__(self):
+#         return "{}".format(self.user.id)
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    boi = models.TextField(default='no bio...', blank=True, null=True)
-    friends = models.ManyToManyField(User, related_name="friends", blank=True)
-    updated = models.DateTimeField(auto_now=True)
-    created = models.DateTimeField(auto_now_add=True)
-
+    followings = models.ManyToManyField(User, related_name="followings", blank=True)
+    fb_friends = models.ManyToManyField(User, related_name='fb_friends', blank=True)
 
     def __str__(self):
-        return str(self.user)
+        return "{}".format(self.user.id)
 
 
 class Account(models.Model):

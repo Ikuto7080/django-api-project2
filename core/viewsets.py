@@ -1,8 +1,8 @@
 from django.contrib.auth.models import User
 from rest_framework import viewsets, permissions, response, pagination
 from rest_framework.permissions import AllowAny
-from core.serializers import UserSerializer, AccountSerializer, GooglePlaceSerializer, PostSerializer, ProfileSerializer, CategoriesSerializer, CityStateSerializer, PublicAccountSerializer, PublicPostSerializer, DeviceSerializer, ConnectionSerializer
-from core.models import Account, GooglePlace, Post, Profile, Device, Connection
+from core.serializers import UserSerializer, AccountSerializer, GooglePlaceSerializer, PostSerializer, ProfileSerializer, CategoriesSerializer, CityStateSerializer, PublicAccountSerializer, PublicPostSerializer, DeviceSerializer
+from core.models import Account, GooglePlace, Post, Profile, Device
 from django.db.models import Q
 from rest_framework.decorators import action
 
@@ -11,19 +11,14 @@ class MyPagenation(pagination.PageNumberPagination):
     page_size_query_param = 'page_size'
     max_page_size = 100
 
-class ConnectionViewSet(viewsets.ModelViewSet):
-    queryset = Connection.objects.all()
-    serializer_class = ConnectionSerializer
+class ProfileViewSet(viewsets.ModelViewSet):
+    queryset = Profile.objects.all()
+    serializer_class = ProfileSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         queryset = self.queryset
         return queryset.filter(user=self.request.user)
-
-    def get_serializer_class(self):
-        if self.request.method == 'POST':
-            return ConnectionSerializer
-        return ConnectionSerializer
 
     @action(detail=True, methods=['post'])
     def follow_unfollow(self, request, pk=None):
@@ -40,13 +35,6 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-
-
-
-class ProfileViewSet(viewsets.ModelViewSet):
-    queryset = Profile.objects.all()
-    serializer_class = ProfileSerializer
-    permissions_classes = [AllowAny]
 
 
 class AccountViewSet(viewsets.ModelViewSet):
@@ -155,7 +143,7 @@ class FeedViewSet(viewsets.ModelViewSet):
                 city__in = city_state
             )
         if self.request.user.is_authenticated:
-            queryset = queryset.filter(Q(user=self.request.user) | Q(user__in=self.request.user.profile.friends.all()))
+            queryset = queryset.filter(Q(user=self.request.user) | Q(user__in=self.request.user.profile.followings.all()))
         return queryset
 
 class FollowingsViewSet(viewsets.ModelViewSet):
@@ -165,14 +153,14 @@ class FollowingsViewSet(viewsets.ModelViewSet):
     pagination_class = MyPagenation
 
     def get_queryset(self):
-        friend_ids = [f.id for f in self.request.user.profile.friends.all()]
+        friend_ids = [f.id for f in self.request.user.profile.followings.all()]
         #__in...IN句検索
         return self.queryset.filter(user_id__in=friend_ids)
         # return self.request.user.profile.friends.all()
 
     @action(detail=False, methods=['get'])
     def count(self, request):
-        followings_count = request.user.profile.friends.count()
+        followings_count = request.user.profile.followings.count()
         body = {'count': followings_count}
         return response.Response(body)
 
@@ -186,11 +174,11 @@ class FollowersViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        return self.queryset.filter(friends__in=[user])
+        return self.queryset.filter(followings__in=[user])
 
     @action(detail=False, methods=['get'])
     def count(self, request):
-        followers_count = self.queryset.filter(friends__in=[request.user]).count()
+        followers_count = self.queryset.filter(followings__in=[request.user]).count()
         body = {'count': followers_count}
         return response.Response(body)
 
@@ -208,7 +196,7 @@ class CategoriesViewSet(viewsets.ModelViewSet):
         #         categories__in = categories
         #     )
         #     return queryset
-        queryset = queryset.filter(Q(user=self.request.user) | Q(user__in=self.request.user.profile.friends.all())).exclude(categories__isnull = True)
+        queryset = queryset.filter(Q(user=self.request.user) | Q(user__in=self.request.user.profile.followings.all())).exclude(categories__isnull = True)
         #filtering with user_ids filter
         user_ids = self.request.query_params.get('user_ids')
         if user_ids is not None:
@@ -241,7 +229,7 @@ class CityStateViewSet(viewsets.ModelViewSet):
                 city__in = city_state
             )
             return queryset
-        queryset = queryset.filter(Q(user=self.request.user) | Q(user__in=self.request.user.profile.friends.all())).exclude(state__isnull = True).exclude(state__exact="")
+        queryset = queryset.filter(Q(user=self.request.user) | Q(user__in=self.request.user.profile.followings.all())).exclude(state__isnull = True).exclude(state__exact="")
         user_ids = self.request.query_params.get('user_ids')
         if user_ids:
             user_id = user_ids.split(',')

@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from django.db.models import fields
 from rest_framework import serializers
-from core.models import Account, Device, GooglePlace, Post, PostImage, Profile, Device, Connection
+from core.models import Account, Device, GooglePlace, Post, PostImage, Profile, Device
 import uuid
 from django.core.files import File
 from urllib import request
@@ -47,7 +47,7 @@ class PublicUserSerializer(serializers.ModelSerializer):
         return request.build_absolute_uri(profile_picture)
 
 
-class ConnectionSerializer(serializers.ModelSerializer):
+class ProfileSerializer(serializers.ModelSerializer):
     my_user_id = serializers.CharField(required=False, write_only=True)
     follow_user_id = serializers.CharField(required=False, write_only=True)
     unfollow_user_id = serializers.CharField(required=False, write_only=True)
@@ -55,8 +55,8 @@ class ConnectionSerializer(serializers.ModelSerializer):
     followings = UserSerializer(many=True, read_only=True)
     fb_friends = UserSerializer(many=True, read_only=True)
     class Meta:
-        model = Connection
-        fields = ['id', 'my_user_id', 'follow_user_id' ,'unfollow_user_id' ,'user', 'followings', 'fb_friends','follow_time']
+        model = Profile
+        fields = ['id', 'my_user_id', 'follow_user_id' ,'unfollow_user_id' ,'user', 'followings', 'fb_friends']
 
     def create(self, validated_data):
         my_user_id = validated_data.get("my_user_id")
@@ -65,14 +65,14 @@ class ConnectionSerializer(serializers.ModelSerializer):
         if follow_user_id:
             my_user = User.objects.filter(id=my_user_id).first()
             follow_user = User.objects.filter(id=follow_user_id).first()
-            my_user.connection.followings.add(follow_user)
+            my_user.profile.followings.add(follow_user)
             return {my_user, "=> ", follow_user}
 
         elif unfollow_user_id:
             print("unfollow user id", unfollow_user_id)
             my_user = User.objects.filter(id=my_user_id).first()
             unfollow_user = User.objects.filter(id=unfollow_user_id).first()
-            my_user.connection.followings.remove(unfollow_user)
+            my_user.profile.followings.remove(unfollow_user)
             return {my_user, "=> ", unfollow_user}
 
 
@@ -103,13 +103,11 @@ class AccountSerializer(serializers.ModelSerializer):
         return super().update(instance, validated_data)
 
     def create(self, validated_data):
-        print('start')
         fb_code = validated_data.get("fb_code")
         ig_code = validated_data.get("ig_code")
         fb_access_token = validated_data.get("fb_access_token")
         account_id = validated_data.get("account_id")
         follow_account_id = validated_data.get("follow_account_id")
-        print('follow_account_id: ', follow_account_id)
         redirect_uri = validated_data.get("redirect_uri", "https://localhost:8080/insta/")
 
         if fb_code:
@@ -138,9 +136,9 @@ class AccountSerializer(serializers.ModelSerializer):
             user.last_name = profile['last_name']
             user.email = profile.get('email', '')
             user.save()
-            connection = Connection()
-            connection.user = user
-            connection.save()
+            bio= Profile()
+            bio.user = user
+            bio.save()
             account = Account()
             account.user = user
             account.fb_id = profile['id']
@@ -150,8 +148,8 @@ class AccountSerializer(serializers.ModelSerializer):
             if follow_account_id:
                 print("follow_account_id: ", follow_account_id)
                 follow_account = Account.objects.filter(id=follow_account_id).first()
-                follow_account.user.profile.friends.add(account.user)
-                account.user.profile.friends.add(follow_account.user)
+                follow_account.user.profile.followings.add(account.user)
+                account.user.profile.followings.add(follow_account.user)
                 account.inviter = follow_account
                 account.save()
                 is_fb_friend = graph.get_object("me/friends/" + str(follow_account.fb_id))
@@ -159,8 +157,8 @@ class AccountSerializer(serializers.ModelSerializer):
                 try:
                     friends = is_fb_friend["data"][0]
                     print(friends)
-                    user.connection.fb_friends.add(follow_account.user)
-                    follow_account.user.connection.fb_friends.add(user)
+                    user.profile.fb_friends.add(follow_account.user)
+                    follow_account.user.profile.fb_friends.add(user)
                 except:
                     return ""
                 send_notification.delay(account.id, follow_account_id)
@@ -232,16 +230,6 @@ class PublicAccountSerializer(serializers.ModelSerializer):
     class Meta:
         model = Account
         fields = ['id', 'user']
-
-
-class ProfileSerializer(serializers.ModelSerializer):
-    user = UserSerializer(read_only=True)
-    friends = UserSerializer(many=True)
-    profile_picture = serializers.CharField(source='user.account.profile_picture')
-    class Meta:
-        model = Profile
-        fields = ['id', 'user', 'friends', 'profile_picture']
-        
 
 class GooglePlaceSerializer(serializers.ModelSerializer):
     image = serializers.SerializerMethodField()
