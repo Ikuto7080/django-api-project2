@@ -222,6 +222,8 @@ class AccountSerializer(serializers.ModelSerializer):
         output['token'] = token.key
         return output
 
+
+
 class PublicAccountSerializer(serializers.ModelSerializer):
     user = PublicUserSerializer(read_only=True)
     class Meta:

@@ -171,7 +171,7 @@ CORS_ALLOW_ALL_ORIGINS = True
 import django_heroku
 django_heroku.settings(locals())
 
-CELERY_BROKER_URL = os.environ.get("REDIS_URL") or 'redis://139.59.253.141'
+CELERY_BROKER_URL = os.environ.get("REDIS_URL") or 'redis://127.0.0.1'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'

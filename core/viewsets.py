@@ -5,6 +5,7 @@ from core.serializers import UserSerializer, AccountSerializer, GooglePlaceSeria
 from core.models import Account, GooglePlace, Post, Profile, Device
 from django.db.models import Q
 from rest_framework.decorators import action
+from core.tasks import get_ig_post, get_fb_post
 
 class MyPagenation(pagination.PageNumberPagination):
     page_size = 10
@@ -73,6 +74,13 @@ class AccountViewSet(viewsets.ModelViewSet):
         user_id = request.user.id
         body = {'account_id': account_id, 'user_id': user_id}
         return response.Response(body)
+
+    @action(detail=True, methods=['post'])
+    def downloadPosts(self, request, pk=None):
+        get_fb_post.delay(pk)
+        print(pk)
+        return response.Response({'status': 'success download posts'})
+
 
 
 class GooglePlaceViewSet(viewsets.ModelViewSet):
