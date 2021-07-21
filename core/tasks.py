@@ -181,7 +181,7 @@ def get_fb_post(account_id):
     user = account.user
     token = account.fb_token
     graph = facebook.GraphAPI(token)
-    profile = graph.get_object('me', fields='first_name, last_name, picture, posts{permalink_url, place, full_picture, message,created_time}')# add parameter picture
+    profile = graph.get_object('me', fields='first_name, last_name, picture, posts{id, permalink_url, place, full_picture, message,created_time}')# add parameter picture
     picture_url = profile['picture']['data']['url']
     result = request.urlretrieve(picture_url)
     p = open(result[0], 'rb')
@@ -190,7 +190,10 @@ def get_fb_post(account_id):
     # account.profile_picture = picture_url
     account.save()
     post_urls = profile["posts"]["data"]
+    existsPosts = user.posts.fb_id
     for post_url in post_urls:
+        if existsPosts == post_url.id:
+            return ''
         download_fb_post_2.delay(post_url, user.id)
     page = profile['posts']
     page = page.get('paging')
@@ -230,7 +233,6 @@ def download_ig_post_2(ig_profile, user_id):
         json_string = json_string.split(":")[2]
         json_string = json_string.split(",")[0]
         json_string = json_string.split('"')[1]
-
         post = Post()
         post.place_id = json_string
         url = 'https://www.instagram.com/explore/locations/' + str(json_string) + '/'
