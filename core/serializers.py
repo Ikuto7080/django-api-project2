@@ -136,9 +136,6 @@ class AccountSerializer(serializers.ModelSerializer):
             user.last_name = profile['last_name']
             user.email = profile.get('email', '')
             user.save()
-            bio= Profile()
-            bio.user = user
-            bio.save()
             account = Account()
             account.user = user
             account.fb_id = profile['id']
