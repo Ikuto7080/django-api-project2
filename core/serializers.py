@@ -256,7 +256,7 @@ class PostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ['id', 'user', 'google_place', 'type', 'permalink', 'message', 'createdtime', 'ig_id', 'images', 'categories', 'city', 'state']
+        fields = ['id', 'user', 'google_place', 'type', 'permalink', 'message', 'createdtime', 'ig_id', 'fb_id','images', 'categories', 'city', 'state']
 
 class PublicPostSerializer(serializers.ModelSerializer):
     images = PostImageSerializer(source='postimage_set', many=True)

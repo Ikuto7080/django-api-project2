@@ -30,6 +30,7 @@ def download_fb_post_2(post_url, user_id):#profile_picture
             message = post_url['message']
         except:
             message = ''
+        post_id = post_url['id']
         created_time = post_url['created_time'].split('T')[0]
         latitude = post_url['place']['location']['latitude']
         longitude = post_url['place']['location']['longitude']
@@ -64,6 +65,7 @@ def download_fb_post_2(post_url, user_id):#profile_picture
         post.createdtime = created_time
         post.type = "facebook"
         post.user_id = user_id
+        post.fb_id = post_id
         google_place = GooglePlace.objects.filter(place_id=place_id).first()
         if not google_place:
             google_place = GooglePlace(place_id=place_id, latitude=google_info['geometry']['location']['lat'], longitude=google_info['geometry']['location']['lng'])
