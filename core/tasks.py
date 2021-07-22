@@ -190,7 +190,9 @@ def get_fb_post(account_id):
     # account.profile_picture = picture_url
     account.save()
     post_urls = profile["posts"]["data"]
-    existsPosts = user.posts.fb_id
+    posts = Post.objects.all()
+    for post in posts:
+        existsPosts = post.fb_id
     for post_url in post_urls:
         if existsPosts == post_url.id:
             return ''
