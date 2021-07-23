@@ -64,6 +64,7 @@ def download_fb_post_2(post_url, user_id):#profile_picture
         post.createdtime = created_time
         post.type = "facebook"
         post.user_id = user_id
+        post.fb_id = post_url.get('id')
         google_place = GooglePlace.objects.filter(place_id=place_id).first()
         if not google_place:
             google_place = GooglePlace(place_id=place_id, latitude=google_info['geometry']['location']['lat'], longitude=google_info['geometry']['location']['lng'])
@@ -190,7 +191,7 @@ def get_fb_post(account_id):
     # account.profile_picture = picture_url
     account.save()
     post_urls = profile["posts"]["data"]
-    existsPosts = user.posts.fb_id
+    existsPosts = user.post_set.fb_id
     for post_url in post_urls:
         if existsPosts == post_url.id:
             return ''
