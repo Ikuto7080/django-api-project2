@@ -30,6 +30,7 @@ def download_fb_post_2(post_url, user_id):#profile_picture
             message = post_url['message']
         except:
             message = ''
+        post_id = post_url['id']
         created_time = post_url['created_time'].split('T')[0]
         latitude = post_url['place']['location']['latitude']
         longitude = post_url['place']['location']['longitude']
