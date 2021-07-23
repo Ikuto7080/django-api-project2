@@ -192,10 +192,11 @@ def get_fb_post(account_id):
     # account.profile_picture = picture_url
     account.save()
     post_urls = profile["posts"]["data"]
-    existsPosts = user.post_set.fb_id
+    # existsPosts = user.post_set.fb_id
+    # print(existsPosts)
     for post_url in post_urls:
-        if existsPosts == post_url.id:
-            return ''
+        # if existsPosts == post_url.id:
+        #     return ''
         download_fb_post_2.delay(post_url, user.id)
     page = profile['posts']
     page = page.get('paging')
