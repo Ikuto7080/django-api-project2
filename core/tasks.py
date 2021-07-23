@@ -148,15 +148,6 @@ def download_fb_post_2(post_url, user_id):#profile_picture
                         else:
                             restaurant_category = "Others"   
                 post.categories = restaurant_category
-            # for i in mylist_category:
-            #     if near_distance is i['location']['distance']:
-            #         matched_venue = i
-            #         for restaurants in i['categories']:
-            #             restaurant_category = restaurants['name']  
-            #             post.categories = restaurant_category
-            #     elif near_distance >= 5000:
-            #         restaurant_category = "Uncategories"
-            #         post.categories = restaurant_category
 
         try:
             state = matched_venue['location']['state']
@@ -192,11 +183,11 @@ def get_fb_post(account_id):
     # account.profile_picture = picture_url
     account.save()
     post_urls = profile["posts"]["data"]
-    # existsPosts = user.post_set.fb_id
-    # print(existsPosts)
+    existsPosts = user.post_set.all()
     for post_url in post_urls:
-        # if existsPosts == post_url.id:
-        #     return ''
+        for existPost in existsPosts:
+            if existPost.fb_id == post_url['id']:
+                return ''
         download_fb_post_2.delay(post_url, user.id)
     page = profile['posts']
     page = page.get('paging')
